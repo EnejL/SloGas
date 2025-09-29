@@ -15,7 +15,7 @@ MojAvto is a React Native application for managing and tracking your vehicle-rel
 1. Clone the repository:
 ```bash
 git clone [repository-url]
-cd mojAvto
+cd SloGas
 ```
 
 2. Install dependencies:
@@ -30,131 +30,38 @@ cd ios && pod install && cd ..
 
 ## Development
 
-### Running the App
+A collection of useful commands for building and running the application during development.
 
-#### iOS
+### Build commands
+Builds the application for the specified platform and profile using EAS.
+
+**Production iOS Build**
 ```bash
-# Using npm script
-npm run ios
-
-# Using React Native CLI directly (this is the preffered method)
-npx react-native run-ios
+eas build --platform ios --profile production --clear-cache
 ```
 
-#### Android
+**Development iOS Build**
 ```bash
-# Using npm script
-npm run android
-
-# Using React Native CLI directly
-npx react-native run-android
+eas build --profile development --platform ios --clear-cache
 ```
 
-### Development Workflow
-
-1. Start Metro bundler (in one terminal):
-```bash
-npx react-native start
-```
-
-2. Run the app (in another terminal):
-```bash
-# For iOS
-npm run ios
-# or
-npx react-native run-ios
-
-# For Android
-npm run android
-# or
-npx react-native run-android
-```
-
-### Common Development Commands
+### Clean and regenerate native files
+Cleans and regenerates the native `ios` and `android` directories. This is useful when native dependencies have been added or changed.
 
 ```bash
-# Clear Metro bundler cache
-npx react-native start --reset-cache
-
-# Clean build (if you encounter build issues)
-# For iOS
-cd ios && rm -rf build/ && pod install && cd .. && npx react-native run-ios
-
-# For Android
-cd android && ./gradlew clean && cd .. && npx react-native run-android
+npx expo prebuild --platform ios --clean
 ```
 
-### Testing
+### Submit to App Store Connect
+Submits the latest successful build to the Apple App Store for review.
 
 ```bash
-# Run tests
-npm test
-
-# Run tests in watch mode
-npm test -- --watch
+eas submit --platform ios --latest
 ```
 
-### Debugging
+### Start development server
+Starts the local development server and launches the app in a simulator or on a connected device.
 
 ```bash
-# Open React Native Debugger
-npx react-native-debugger
-
-# Enable remote debugging in the app
-# Shake your device or press Cmd+D (iOS) / Cmd+M (Android) in the simulator
+npx expo start --dev-client
 ```
-
-### Troubleshooting
-
-```bash
-# Clear watchman watches
-watchman watch-del-all
-
-# Clear npm cache
-npm cache clean --force
-
-# Reinstall node modules
-rm -rf node_modules
-npm install
-```
-
-### Updating Dependencies
-
-```bash
-# Update all dependencies
-npm update
-
-# Update specific package
-npm update package-name
-
-# Check for outdated packages
-npm outdated
-```
-
-## Project Structure
-
-```
-mojAvto/
-├── android/          # Android native code
-├── ios/             # iOS native code
-├── components/      # Reusable components
-├── screens/         # Screen components
-├── utils/           # Utility functions and services
-│   ├── translations/ # Internationalization files
-│   ├── auth.js      # Authentication utilities
-│   ├── firebase.js  # Firebase configuration
-│   └── ...          # Other utility files
-├── assets/          # Images, fonts, etc.
-├── App.js           # Main application component
-└── package.json     # Project dependencies
-```
-
-## Contributing
-
-1. Create a new branch for your feature
-2. Make your changes
-3. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
