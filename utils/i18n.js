@@ -5,18 +5,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Import translation files
 import slTranslations from "./translations/sl.json";
 import enTranslations from "./translations/en.json";
+import itTranslations from "./translations/it.json";
+import deTranslations from "./translations/de.json";
+import hrTranslations from "./translations/hr.json";
+
 
 // Storage key for language preference
-const LANGUAGE_STORAGE_KEY = "@mojAvto:language";
+const LANGUAGE_STORAGE_KEY = "@SloGas:language";
 
 // Configure resources
 const resources = {
-  sl: {
-    translation: slTranslations
-  },
-  en: {
-    translation: enTranslations
-  }
+  sl: { translation: slTranslations },
+  en: { translation: enTranslations },
+  it: { translation: itTranslations },
+  de: { translation: deTranslations },
+  hr: { translation: hrTranslations },
 };
 
 // Function to get saved language from storage
