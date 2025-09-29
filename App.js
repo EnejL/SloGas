@@ -6,6 +6,7 @@ import { Provider as PaperProvider } from "react-native-paper";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "react-native";
 
+import './utils/i18n'; // Import to initialize i18next
 import StationsScreen from "./screens/StationsScreen";
 import StationDetailsScreen from "./screens/StationDetailsScreen";
 
