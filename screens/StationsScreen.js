@@ -15,7 +15,8 @@ import {
 import { Surface, Searchbar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { TabView, TabBar } from "react-native-tab-view";
-import MapView, { Marker, PROVIDER_GOOGLE, Callout } from "react-native-maps";
+import MapView from "react-native-map-clustering";
+import { Marker, PROVIDER_GOOGLE, Callout } from "react-native-maps";
 import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
 import { db } from "../utils/firebase";
@@ -451,13 +452,13 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
         initialRegion={region}
         onRegionChangeComplete={setRegion}
         showsUserLocation={true}
-        clusterColor="#2e7d32"
+        // clusterColor="#2e7d32"
+        clusterColor="blue"
+        clusterTextColor="#fff"
       >
         {stations.map((station) => (
           <Marker
-            // FIX: Use station.pk for the key
             key={station.pk}
-            // FIX: Use station.lat and station.lng for coordinates
             coordinate={{ latitude: station.lat, longitude: station.lng }}
             tracksViewChanges={false}
           >
