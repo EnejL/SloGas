@@ -26,8 +26,8 @@ const StationDetailsScreen = ({ route, navigation }) => {
       ios: "maps:0,0?q=",
       android: "geo:0,0?q=",
     });
-    // Use location.y for latitude and location.x for longitude
-    const latLng = `${station.location.y},${station.location.x}`;
+    // FIX: Use lat and lng instead of location.y and location.x
+    const latLng = `${station.lat},${station.lng}`;
     const label = station.name;
     const url = Platform.select({
       ios: `${scheme}${label}@${latLng}`,
@@ -41,41 +41,48 @@ const StationDetailsScreen = ({ route, navigation }) => {
     const openingHoursText = station.opening_hours || station.open_hours;
     if (!openingHoursText) return null;
 
-    if (typeof openingHoursText === "string") {
-      const lines = openingHoursText
-        .replace(/\\r/g, "")
-        .split(/\r?\n/)
-        .filter((line) => line.trim().length > 0);
-      
-      if (lines.length > 0) {
-        return (
-          <View style={styles.hoursContainer}>
-            {lines.map((line, index) => {
-              const isHeader =
-                line.toUpperCase() === line ||
-                line.trim().endsWith(":") ||
-                line.includes("OBRATOVALNI ČAS");
-              return (
-                <Text
-                  key={index}
-                  style={[
-                    styles.hourText,
-                    isHeader ? styles.hourHeader : null,
-                  ]}
-                >
-                  {line.trim()}
-                </Text>
-              );
-            })}
-          </View>
-        );
+    try {
+      if (typeof openingHoursText === "string") {
+        const lines = openingHoursText
+          .replace(/\\r/g, "")
+          .split(/\r?\n/)
+          .filter((line) => line.trim().length > 0);
+
+        if (lines.length > 0) {
+          return (
+            <View style={styles.hoursContainer}>
+              {lines.map((line, index) => {
+                const isHeader =
+                  line.toUpperCase() === line ||
+                  line.trim().endsWith(":") ||
+                  line.includes("OBRATOVALNI ČAS");
+                return (
+                  <Text
+                    key={index}
+                    style={[
+                      styles.hourText,
+                      isHeader ? styles.hourHeader : null,
+                    ]}
+                  >
+                    {line.trim()}
+                  </Text>
+                );
+              })}
+            </View>
+          );
+        }
       }
+      
+      // Fallback for non-string or empty strings
+      return (
+        <View style={styles.hoursContainer}>
+          <Text style={styles.hourText}>{openingHoursText}</Text>
+        </View>
+      );
+    } catch (error) {
+      console.error("Error handling opening hours:", error);
+      return null;
     }
-    return (
-      <View style={styles.hoursContainer}>
-        <Text style={styles.hourText}>{openingHoursText}</Text>
-      </View>
-    );
   };
 
   const isOpen24Hours = station.open_24h || station.open_24_7;
@@ -88,8 +95,9 @@ const StationDetailsScreen = ({ route, navigation }) => {
           provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
           style={styles.map}
           initialRegion={{
-            latitude: station.location.y,
-            longitude: station.location.x,
+            // FIX: Use lat and lng for map region
+            latitude: station.lat,
+            longitude: station.lng,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           }}
@@ -98,8 +106,9 @@ const StationDetailsScreen = ({ route, navigation }) => {
         >
           <Marker
             coordinate={{
-              latitude: station.location.y,
-              longitude: station.location.x,
+              // FIX: Use lat and lng for marker coordinates
+              latitude: station.lat,
+              longitude: station.lng,
             }}
             title={station.name}
           />

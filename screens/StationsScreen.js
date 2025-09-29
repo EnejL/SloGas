@@ -32,13 +32,20 @@ const fetchPetrolStations = async () => {
 
     if (petrolStationsDoc.exists) {
       const petrolStationsData = petrolStationsDoc.data();
-      // Filter out stations without a valid location
-      const validStations = petrolStationsData.data.results.filter(
-        station => station.location && typeof station.location.y === 'number' && typeof station.location.x === 'number'
-      );
-      return validStations;
+      
+      if (petrolStationsData && petrolStationsData.data && Array.isArray(petrolStationsData.data.results)) {
+        const results = petrolStationsData.data.results;
+        
+        const validStations = results.filter(
+          station => typeof station.lat === 'number' && typeof station.lng === 'number'
+        );
+        return validStations;
+
+      } else {
+        return [];
+      }
+
     } else {
-      console.log("No petrol stations data found in Firestore");
       return [];
     }
   } catch (error) {
@@ -113,7 +120,8 @@ const StationsScreen = ({ navigation }) => {
   }, [stations]);
   
   const favoriteStations = React.useMemo(() => 
-    stations.filter(station => favoriteStationIds.has(station.id)),
+    // FIX: Use station.pk for matching against the Set of favorite IDs
+    stations.filter(station => favoriteStationIds.has(station.pk)),
     [stations, favoriteStationIds]
   );
 
@@ -250,7 +258,8 @@ const StationListScreen = ({
   }, [favoriteStationIds, onFavoritesChange, t]);
 
   const renderItem = useCallback(({ item }) => {
-    const isFavorited = favoriteStationIds.has(item.id);
+    // FIX: Use item.pk to check if the station is favorited
+    const isFavorited = favoriteStationIds.has(item.pk);
     return (
       <TouchableOpacity
         style={styles.stationItem}
@@ -263,7 +272,8 @@ const StationListScreen = ({
           </View>
           <TouchableOpacity
             style={styles.favoriteButton}
-            onPress={() => toggleFavorite(item.id)}
+            // FIX: Pass item.pk to the toggle function
+            onPress={() => toggleFavorite(item.pk)}
           >
             <MaterialCommunityIcons
               name={isFavorited ? "heart" : "heart-outline"}
@@ -316,7 +326,8 @@ const StationListScreen = ({
       ) : (
         <FlatList
           data={stations}
-          keyExtractor={(item) => item.id.toString()}
+          // FIX: Use item.pk for the key, as it's the unique identifier
+          keyExtractor={(item) => item.pk.toString()}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
           refreshControl={
@@ -444,8 +455,10 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
       >
         {stations.map((station) => (
           <Marker
-            key={station.id}
-            coordinate={{ latitude: station.location.y, longitude: station.location.x }}
+            // FIX: Use station.pk for the key
+            key={station.pk}
+            // FIX: Use station.lat and station.lng for coordinates
+            coordinate={{ latitude: station.lat, longitude: station.lng }}
             tracksViewChanges={false}
           >
             <Callout
