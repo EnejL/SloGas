@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "privacyPolicy": "Privacy Policy",
+    "termsOfUse": "Terms of Use",
+    "about": "About",
+    "language": "Language"
+  },
+  "petrolStations": {
+    "map": "Map",
+    "list": "List",
+    "favorites": "Favorites",
+    "fetchError": "Could not fetch station data.",
+    "searchPlaceholder": "Search by name or address...",
+    "noFavorites": "You have not added any favorite stations yet.",
+    "noSearchResults": "No stations found matching your search.",
+    "empty": "No stations to display.",
+    "viewDetails": "View Details",
+    "openingHours": "Opening Hours",
+    "open24Hours": "Open 24/7",
+    "noOpeningHours": "Opening hours not available.",
+    "prices": "Fuel Prices",
+    "getDirections": "Get Directions"
+  }
+}

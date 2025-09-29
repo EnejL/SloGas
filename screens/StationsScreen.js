@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -64,6 +64,20 @@ const StationsScreen = ({ navigation }) => {
   const [filteredStations, setFilteredStations] = useState([]);
   const [favoriteStationIds, setFavoriteStationIds] = useState(new Set());
   const [index, setIndex] = useState(0);
+
+  // Add a settings icon to the header
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Settings')}
+          style={{ marginRight: 15 }}
+        >
+          <MaterialIcons name="settings" size={24} color="black" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const [routes] = useState([
     { key: 'map', title: t('petrolStations.map') },

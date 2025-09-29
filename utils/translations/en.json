@@ -121,7 +121,9 @@
     "languageSl": "🇸🇮 Slovenščina",
     "languageEn": "🇬🇧 English",
     "theme": "Theme",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfUse": "Terms of Use"
   },
   "common": {
     "loading": "Loading...",
