@@ -60,8 +60,6 @@ const StationsScreen = ({ navigation }) => {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredStations, setFilteredStations] = useState([]);
   const [favoriteStationIds, setFavoriteStationIds] = useState(new Set());
   const [index, setIndex] = useState(0);
 
@@ -105,7 +103,6 @@ const StationsScreen = ({ navigation }) => {
     try {
       const data = await fetchPetrolStations();
       setStations(data);
-      setFilteredStations(data);
     } catch (error) {
       console.error("Error loading petrol stations:", error);
       setError(t("petrolStations.fetchError"));
@@ -120,22 +117,8 @@ const StationsScreen = ({ navigation }) => {
       fetchFavoriteIds(); // Re-fetch favorites when screen is focused
     }, [loadStations, fetchFavoriteIds])
   );
-
-  const handleSearch = useCallback((query) => {
-    setSearchQuery(query);
-    if (query) {
-      const filtered = stations.filter(station =>
-        station.name.toLowerCase().includes(query.toLowerCase()) ||
-        station.address.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredStations(filtered);
-    } else {
-      setFilteredStations(stations);
-    }
-  }, [stations]);
   
   const favoriteStations = React.useMemo(() => 
-    // FIX: Use station.pk for matching against the Set of favorite IDs
     stations.filter(station => favoriteStationIds.has(station.pk)),
     [stations, favoriteStationIds]
   );
@@ -145,7 +128,7 @@ const StationsScreen = ({ navigation }) => {
       case 'map':
         return (
           <StationMapScreen
-            stations={filteredStations}
+            stations={stations}
             loading={loading}
             error={error}
             navigation={navigation}
@@ -154,32 +137,22 @@ const StationsScreen = ({ navigation }) => {
       case 'list':
         return (
           <StationListScreen
-            stations={filteredStations}
+            stations={stations}
             loading={loading}
             error={error}
             navigation={navigation}
-            searchQuery={searchQuery}
-            onSearch={handleSearch}
             onRefresh={loadStations}
             favoriteStationIds={favoriteStationIds}
             onFavoritesChange={fetchFavoriteIds}
           />
         );
       case 'favorites':
-        const favoriteQuery = searchQuery && route.key === 'favorites'
-            ? favoriteStations.filter(station =>
-                station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                station.address.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-            : favoriteStations;
         return (
           <StationListScreen
-            stations={favoriteQuery}
+            stations={favoriteStations}
             loading={loading}
             error={error}
             navigation={navigation}
-            searchQuery={searchQuery}
-            onSearch={handleSearch}
             isFavorites={true}
             onRefresh={() => { loadStations(); fetchFavoriteIds(); }}
             favoriteStationIds={favoriteStationIds}
@@ -194,9 +167,6 @@ const StationsScreen = ({ navigation }) => {
     loading,
     error,
     navigation,
-    filteredStations,
-    searchQuery,
-    handleSearch,
     loadStations,
     favoriteStationIds,
     fetchFavoriteIds,
@@ -230,8 +200,6 @@ const StationListScreen = ({
   loading, 
   error, 
   navigation,
-  searchQuery,
-  onSearch,
   isFavorites = false,
   onRefresh,  
   favoriteStationIds,
@@ -239,6 +207,21 @@ const StationListScreen = ({
 }) => {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+  
+  const filteredStations = React.useMemo(() => {
+    if (!searchQuery) {
+      return stations;
+    }
+    return stations.filter(station =>
+      station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      station.address.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [stations, searchQuery]);
 
   const handleRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -322,13 +305,13 @@ const StationListScreen = ({
         <Surface style={styles.searchContainer}>
           <Searchbar
             placeholder={t("petrolStations.searchPlaceholder")}
-            onChangeText={onSearch}
+            onChangeText={handleSearch}
             value={searchQuery}
             style={styles.searchBar}
           />
         </Surface>
 
-      {stations.length === 0 ? (
+      {filteredStations.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
             {isFavorites 
@@ -340,7 +323,7 @@ const StationListScreen = ({
         </View>
       ) : (
         <FlatList
-          data={stations}
+          data={filteredStations}
           // FIX: Use item.pk for the key, as it's the unique identifier
           keyExtractor={(item) => item.pk.toString()}
           renderItem={renderItem}
