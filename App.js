@@ -9,6 +9,7 @@ import { StatusBar } from "react-native";
 import './utils/i18n'; // Import to initialize i18next
 import StationsScreen from "./screens/StationsScreen";
 import StationDetailsScreen from "./screens/StationDetailsScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -19,8 +20,9 @@ export default function App() {
         <StatusBar style="auto" />
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen name="Stations" component={StationsScreen} options={{ headerShown: false }}/>
+            <Stack.Screen name="Stations" component={StationsScreen} options={{ title: 'SloGas' }}/>
             <Stack.Screen name="StationDetails" component={StationDetailsScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
