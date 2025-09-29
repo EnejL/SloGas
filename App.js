@@ -1,0 +1,28 @@
+import "react-native-gesture-handler";
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Provider as PaperProvider } from "react-native-paper";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { StatusBar } from "react-native";
+
+import StationsScreen from "./screens/StationsScreen";
+import StationDetailsScreen from "./screens/StationDetailsScreen";
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PaperProvider>
+        <StatusBar style="auto" />
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="Stations" component={StationsScreen} options={{ headerShown: false }}/>
+            <Stack.Screen name="StationDetails" component={StationDetailsScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    </GestureHandlerRootView>
+  );
+}

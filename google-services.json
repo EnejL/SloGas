@@ -1,0 +1,118 @@
+{
+  "project_info": {
+    "project_number": "130352948782",
+    "project_id": "mojavto-c67fe",
+    "storage_bucket": "mojavto-c67fe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130352948782:android:ff85c028772f72c7e361bf",
+        "android_client_info": {
+          "package_name": "com.enejlicina.drivetrackpro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130352948782-6l7nho00ok5q5oilc41nlna6bjg1vk0t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDe9VM09sj4lBLMCblyXB1KSIPCs8sdc4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130352948782-6l7nho00ok5q5oilc41nlna6bjg1vk0t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "130352948782-pngnt58m12bpe252pdv4tad7drlruu4p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.enejlicina.slogas"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130352948782:android:128b5b4e0c4b5378e361bf",
+        "android_client_info": {
+          "package_name": "com.enejlicina.napoti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130352948782-6l7nho00ok5q5oilc41nlna6bjg1vk0t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDe9VM09sj4lBLMCblyXB1KSIPCs8sdc4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130352948782-6l7nho00ok5q5oilc41nlna6bjg1vk0t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "130352948782-pngnt58m12bpe252pdv4tad7drlruu4p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.enejlicina.slogas"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130352948782:android:a27fbb9b3757cf6ae361bf",
+        "android_client_info": {
+          "package_name": "com.enejlicina.slogas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130352948782-6l7nho00ok5q5oilc41nlna6bjg1vk0t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDe9VM09sj4lBLMCblyXB1KSIPCs8sdc4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130352948782-6l7nho00ok5q5oilc41nlna6bjg1vk0t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "130352948782-pngnt58m12bpe252pdv4tad7drlruu4p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.enejlicina.slogas"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

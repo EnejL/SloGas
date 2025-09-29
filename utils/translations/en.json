@@ -1,0 +1,355 @@
+{
+  "navigation": {
+    "home": "Home",
+    "myVehicles": "My Vehicles",
+    "fuelConsumption": "Fuel Consumption",
+    "petrolStations": "Gas Stations",
+    "settings": "Settings",
+    "back": "Back"
+  },
+  "vehicles": {
+    "title": "My Vehicles",
+    "details": "Details",
+    "add": "Add Vehicle",
+    "edit": "Edit Vehicle",
+    "name": "Vehicle Name",
+    "make": "Make",
+    "model": "Model",
+    "addFirst": "Add Your First Vehicle",
+    "numberPlate": "License Plate",
+    "vehicleType": "Vehicle Type",
+    "fuelTankSize": "Tank Capacity",
+    "batteryCapacity": "Battery Capacity",
+    "empty": "No vehicles added yet",
+    "selected": "Selected Vehicle",
+    "deleteVehicle": "Delete Vehicle",
+    "deleteConfirmMessage": "Are you sure you want to delete this vehicle?",
+    "makePlaceholder": "Select Make",
+    "modelPlaceholder": "Select make first",
+    "statistics": "Vehicle Statistics",
+    "history": "History",
+    "noHistory": "No recorded events",
+    "trueRunningCost": "Total Driving Cost",
+    "monthlyEstimate": "Estimated Monthly Cost",
+    "avgCostPer100km": "Avg. cost per 100 km",
+    "totalCost": "Total cost of fuel-ups / charging sessions",
+    "types": {
+      "ICE": "Gasoline / Diesel",
+      "HYBRID": "Hybrid (mild / full)",
+      "PHEV": "PHEV (plug-in hybrid)",
+      "BEV": "Electric Vehicle"
+    }
+  },
+  "fillings": {
+    "title": "Fuel Fill-ups",
+    "nav": "Fuel Consumption",
+    "date": "Date",
+    "liters": "Liters",
+    "cost": "Cost",
+    "odometer": "Odometer Reading",
+    "add": "Fill-up +",
+    "empty": "No fill-ups recorded",
+    "delete": "Remove Entry",
+    "consumption": "Average Fuel Consumption",
+    "consumptionUnit": "l/100 km",
+    "distanceSince": "Distance since last fill-up",
+    "noVehiclesWarning": "You must add a vehicle first before recording fuel fill-ups.",
+    "noFillings": "No fuel fill-ups recorded yet. Please add your first fill-up.",
+    "notEnoughData": "Not enough data. Enter at least two fill-ups.",
+    "edit": "Edit Fill-up",
+    "deleteConfirmMessage": "Are you sure you want to delete this fill-up?",
+    "filling": "fill-up",
+    "statistics": "Vehicle Statistics",
+    "fuelConsumptionUnit": "l/100 km",
+    "avgCost": "Average Fill-up Cost",
+    "avgPricePerLiter": "Average Fuel Price per Liter",
+    "avgLiters": "Average Fill-up",
+    "totalCost": "Total cost of fill-ups",
+    "showConsumptionGraph": "Show consumption graph",
+    "consumptionOverTime": "Fuel consumption over time"
+  },
+  "charging": {
+    "title": "Battery Charging",
+    "session": "charging session",
+    "add": "Charging +",
+    "edit": "Edit Charging",
+    "empty": "No charging sessions recorded",
+    "notEnoughData": "Not enough data. Enter at least two charging sessions.",
+    "date": "Date",
+    "energyAdded": "Energy Added",
+    "cost": "Cost",
+    "odometer": "Odometer Reading",
+    "locationType": "Location Type",
+    "chargerType": "Charger Type",
+    "locationName": "Location Name",
+    "locationNamePlaceholder": "e.g. Petrol Ljubljana",
+    "locationHome": "Home",
+    "locationPublic": "Public",
+    "locationWorkplace": "Workplace",
+    "avgConsumption": "Electric Energy Consumption",
+    "electricityConsumptionUnit": "kWh/100 km",
+    "avgPricePerKWh": "Average Price per kWh",
+    "avgCost": "Average Charging Cost",
+    "totalCost": "Total cost of charging sessions",
+    "deleteConfirmMessage": "Are you sure you want to delete this charging session?",
+    "consumptionUnit": "kWh/100 km",
+    "moreDetails": "Add Details",
+    "delete": "Delete Charging"
+  },
+  "petrolStations": {
+    "title": "Gas Stations",
+    "list": "List",
+    "map": "Map",
+    "fetchError": "Error loading gas stations",
+    "description": "Gas stations will be here ...",
+    "viewDetails": "More Information",
+    "prices": "Fuel Prices",
+    "getDirections": "Navigation",
+    "openingHours": "Opening Hours",
+    "open24Hours": "Open 24 hours",
+    "closed": "Closed",
+    "noOpeningHours": "Opening hours information not available",
+    "searchPlaceholder": "Search by name or address",
+    "noSearchResults": "No search results",
+    "empty": "No stations available",
+    "favorites": "Favorites",
+    "noFavorites": "No stations available"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "languageSl": "🇸🇮 Slovenščina",
+    "languageEn": "🇬🇧 English",
+    "theme": "Theme",
+    "notifications": "Notifications"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "error": {
+      "save": "Save failed",
+      "load": "Load failed",
+      "required": "Please fill in all fields",
+      "delete": "Delete failed"
+    },
+    "submit": "Submit",
+    "ok": "OK",
+    "delete": "Delete",
+    "done": "Done",
+    "version": "Version",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "faq": "Frequently Asked Questions",
+    "hide": "Hide"
+  },
+  "auth": {
+    "title": "Account",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "anonymousInfo": "You are currently using the app anonymously. Create an account to save data across devices.",
+    "error": {
+      "createAccount": "Account creation failed",
+      "signIn": "Sign in failed",
+      "signOut": "Sign out failed",
+      "invalidCredentials": "Invalid email or password",
+      "userDisabled": "This account is disabled",
+      "tooManyAttempts": "Too many attempts. Please try later",
+      "unknownError": "An error occurred. Please try again",
+      "emailTaken": "This email is already in use",
+      "weakPassword": "Password must contain at least 6 characters",
+      "googleSignInFailed": "Google sign in failed. Please try later.",
+      "appleSignInFailed": "Apple sign in failed. Please try later.",
+      "userNotFound": "User with this email address not found",
+      "incorrectEmail": "Incorrect email address",
+      "invalidEmailFormat": "Invalid email address",
+      "passwordsDontMatch": "Passwords don't match!"
+    },
+    "verification": {
+      "title": "Email Verification",
+      "description": "Email sent to {{email}}. Please check your email and click the verification link.",
+      "instructions": "Please check your email and click the verification link.",
+      "checkVerification": "Check",
+      "resendEmail": "Resend Email",
+      "signOut": "Cancel"
+    },
+    "haveAccount": "Already have an account? Sign in",
+    "needAccount": "Need an account?",
+    "signedInAs": "Signed in as {{email}}",
+    "signOut": "Sign Out",
+    "greeting": "Hello, {{name}}",
+    "greetingAnonymous": "Hello!",
+    "accountManage": "My Account",
+    "forgotPassword": "Forgot your password?",
+    "forgotPasswordInstructions": "Please enter your email address and you will receive password reset instructions.",
+    "enterEmailFirst": "Please enter your email address first",
+    "resetEmailSent": "Password reset email sent",
+    "checkEmail": "Check your email for password reset instructions",
+    "resetError": "Password reset error",
+    "confirmPassword": "Confirm Password",
+    "passwords-dont-match": "Passwords don't match",
+    "signInWithGoogle": "Sign in with Google",
+    "signInWithApple": "Sign in with Apple",
+    "or": "or",
+    "googleSignInFailed": "Google sign in failed. Please try again.",
+    "appleSignInFailed": "Apple sign in failed. Please try again.",
+    "welcomeMessage": "Your vehicles, in the palm of your hand!",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirm": "Are you sure you want to delete your account?",
+    "deleteAccountWarning": "This action cannot be undone. All your data will be permanently deleted.",
+    "deleteAccountSuccess": "Account deleted successfully",
+    "deleteAccountError": "Failed to delete account. Please try again."
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "questions": [
+      {
+        "question": "Is the application free?",
+        "answer": "Yes, the application is completely free to use."
+      },
+      {
+        "question": "How do I add a new vehicle?",
+        "answer": "In the main menu, select 'My Vehicles' and then select 'Add Vehicle'. Fill in the required vehicle data (make, model) and click 'Add Vehicle'."
+      },
+      {
+        "question": "How do I record fuel consumption?",
+        "answer": "Click on the desired vehicle in the 'My Vehicles' menu, then select 'Fill-up +'. Enter the fill-up date, amount of fuel added, total fill-up cost, and odometer reading. The application will automatically calculate consumption when at least two fill-ups are entered."
+      },
+      {
+        "question": "How do I record electricity consumption?",
+        "answer": "Click on the desired vehicle in the 'My Vehicles' menu, then select 'Charging +'. Enter the charging date, amount of electrical energy, total charging cost, and odometer reading. The application will automatically calculate consumption when at least two charging sessions are entered."
+      },
+      {
+        "question": "Can I add multiple vehicles?",
+        "answer": "Yes, you can add multiple vehicles. In the 'My Vehicles' menu, you can add a new vehicle using the same procedure as for the first vehicle."
+      },
+      {
+        "question": "Can I use the application if my vehicle is a plug-in hybrid (PHEV)?",
+        "answer": "Yes, you can use the application for plug-in hybrids as well. In the 'My Vehicles' menu, you can add your hybrid vehicle using the same procedure as for a gasoline vehicle."
+      },
+      {
+        "question": "Do my data sync between devices?",
+        "answer": "Yes, all your data is synchronized. This means you have access to your data on all devices where you are logged in."
+      },
+      {
+        "question": "How do I delete my account?",
+        "answer": "You can delete your account directly from the app. Go to the Account tab in the bottom bar and scroll down to find the 'Delete Account' option. This will permanently delete all your data and cannot be undone."
+      },
+      {
+        "question": "How does fuel consumption calculation work?",
+        "answer": "The application calculates consumption based on the difference in kilometers between fill-ups and the amount of fuel added. The formula is: (liters / difference in kilometers) * 100."
+      },
+      {
+        "question": "How does electricity consumption calculation work?",
+        "answer": "The application calculates consumption based on the difference in kilometers between charging sessions and the amount of electrical energy. The formula is: (kWh / difference in kilometers) * 100."
+      },
+      {
+        "question": "Can I export my data?",
+        "answer": "This feature is not currently available. We are planning to add the option to export data in CSV format in the future."
+      }
+    ]
+  },
+  "termsOfUse": {
+    "title": "Terms of Use",
+    "lastUpdated": "Last updated: August 24, 2025",
+    "sections": [
+      {
+        "title": "1. Service Description",
+        "content": "\"DriveTrack Pro\" enables users to:",
+        "bulletPoints": [
+          "track fuel/electricity consumption"
+        ]
+      },
+      {
+        "title": "2. User Account",
+        "content": "Use of the application is only possible with a registered account."
+      },
+      {
+        "title": "3. Limitation of Liability",
+        "content": "The developer does not guarantee the complete accuracy of displayed data (fuel prices, locations, opening hours).\nThe developer is not responsible for any damage that may occur due to the use of the application."
+      },
+      {
+        "title": "4. Developer Rights",
+        "content": "The developer may anonymously analyze data to improve the application."
+      },
+      {
+        "title": "5. Termination of Use",
+        "content": "Users may delete their user account at any time directly from the app. Go to Account and select 'Delete Account'.\n\nWith account deletion, all personal data is permanently deleted and cannot be recovered."
+      },
+      {
+        "title": "6. Applicable Law",
+        "content": "Slovenian law applies to all potential disputes.\nSlovenian courts have jurisdiction."
+      },
+      {
+        "title": "7. Age Restrictions",
+        "content": "The application is intended for users over 18 years of age."
+      }
+    ]
+  },
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: August 24, 2025",
+    "sections": [
+      {
+        "title": "1. General Information",
+        "content": "The \"DriveTrack Pro\" application is developed by Enej Ličina.\nFor all privacy questions, you can contact us at: enej.dev@gmail.com."
+      },
+      {
+        "title": "2. Application Purpose",
+        "content": "\"DriveTrack Pro\" enables users to track fuel or electricity consumption of their vehicles."
+      },
+      {
+        "title": "3. Collection and Processing of Personal Data",
+        "content": "We collect the following data:",
+        "bulletPoints": [
+          "First and last name",
+          "Email address",
+          "Vehicle data (make, model, license plate number)",
+          "Location (for finding gas stations)",
+          "Fuel fill-up data",
+          "Electricity charging data"
+        ],
+        "subsections": [
+          {
+            "title": "Legal Basis for Processing:",
+            "content": "User consent when registering an account."
+          },
+          {
+            "title": "Third-Party Processing:",
+            "content": "We use Google's Firebase service for authentication and data storage."
+          },
+          {
+            "title": "Data Retention Period:",
+            "content": "We store your data until your user account is deleted or a maximum of 6 months after account deletion."
+          },
+          {
+            "title": "Your Rights:",
+            "bulletPoints": [
+              "Right to access data",
+              "Right to delete data (\"right to be forgotten\")"
+            ],
+            "content": "To exercise your rights, contact us at the email address above."
+          }
+        ]
+      },
+      {
+        "title": "4. Cookies and Analytics",
+        "content": "The application uses Google Analytics for Firebase to collect anonymous usage data. The purpose is solely to analyze application usage.\nCookies cannot be disabled within the application."
+      },
+      {
+        "title": "5. Data Transfer to Third Countries",
+        "content": "Data is not transferred outside the EU/EEA."
+      },
+      {
+        "title": "6. Age Limitation",
+        "content": "The application can only be used by persons aged 18 or older."
+      },
+      {
+        "title": "7. Trademarks",
+        "content": "All trademarks and logos (vehicle brands, gas station logos, etc.) are the property of their legal owners."
+      }
+    ]
+  }
+}
