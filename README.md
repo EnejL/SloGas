@@ -1,6 +1,6 @@
-# MojAvto
+# SloGas
 
-MojAvto is a React Native application for managing and tracking your vehicle-related activities.
+SloGas is a React Native application for managing and tracking your vehicle-related activities.
 
 ## Prerequisites
 
