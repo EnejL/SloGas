@@ -26,6 +26,57 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 const initialLayout = { width: Dimensions.get("window").width };
 
+const isStationOpen = (station) => {
+  const openingHours = station.opening_hours || station.open_hours;
+  
+  // Handle special cases
+  if (openingHours === "24/7") return true;
+  if (openingHours === "closed") return false;
+  if (!openingHours) return null; // Unknown
+  
+  // Handle structured array format
+  if (Array.isArray(openingHours)) {
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const currentMonth = now.getMonth() + 1; // 1-12
+    const currentTime = now.getHours() * 60 + now.getMinutes(); // Minutes since midnight
+    
+    // Map JS day numbers to our day codes
+    const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const todayCode = dayMap[currentDay];
+    
+    // Filter schedules relevant to today
+    const relevantSchedules = openingHours.filter(schedule => {
+      // Check if this schedule applies to current month (if months specified)
+      if (schedule.months && schedule.months.length > 0) {
+        if (!schedule.months.includes(currentMonth)) return false;
+      }
+      
+      // Check if this schedule applies to today
+      return schedule.days.includes(todayCode);
+    });
+    
+    // Check if any relevant schedule covers the current time
+    for (const schedule of relevantSchedules) {
+      for (const timeSlot of schedule.times) {
+        const [fromHour, fromMin] = timeSlot.from.split(':').map(Number);
+        const [toHour, toMin] = timeSlot.to.split(':').map(Number);
+        
+        const fromTime = fromHour * 60 + fromMin;
+        const toTime = toHour * 60 + toMin;
+        
+        if (currentTime >= fromTime && currentTime <= toTime) {
+          return true;
+        }
+      }
+    }
+    
+    return false; // No matching schedule found
+  }
+  
+  return null; // Unknown format
+};
+
 const fetchPetrolStations = async () => {
   try {
     const petrolStationsRef = db.collection('data').doc('petrolStations');
@@ -103,6 +154,39 @@ const StationsScreen = ({ navigation }) => {
     try {
       const data = await fetchPetrolStations();
       setStations(data);
+      
+      // Log open/closed statistics
+      const now = new Date();
+      const openStations = [];
+      const closedStations = [];
+      const unknownStations = [];
+      
+      data.forEach(station => {
+        const isOpen = isStationOpen(station);
+        if (isOpen === true) {
+          openStations.push(station);
+        } else if (isOpen === false) {
+          closedStations.push(station);
+        } else {
+          unknownStations.push(station);
+        }
+      });
+      
+      console.log('═'.repeat(60));
+      console.log('PETROL STATIONS STATUS - ' + now.toLocaleString());
+      console.log('═'.repeat(60));
+      console.log('🟢 OPEN NOW:    ', openStations.length, 'stations');
+      console.log('🔴 CLOSED NOW:  ', closedStations.length, 'stations');
+      console.log('⚪ UNKNOWN:     ', unknownStations.length, 'stations');
+      console.log('📊 TOTAL:       ', data.length, 'stations');
+      console.log('═'.repeat(60));
+      
+      // Show breakdown by status
+      const openPercentage = ((openStations.length / data.length) * 100).toFixed(1);
+      const closedPercentage = ((closedStations.length / data.length) * 100).toFixed(1);
+      console.log(`Open: ${openPercentage}% | Closed: ${closedPercentage}%`);
+      console.log('═'.repeat(60));
+      
     } catch (error) {
       console.error("Error loading petrol stations:", error);
       setError(t("petrolStations.fetchError"));

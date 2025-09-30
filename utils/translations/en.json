@@ -107,6 +107,7 @@
     "getDirections": "Navigation",
     "openingHours": "Opening Hours",
     "open24Hours": "Open 24 hours",
+    "open": "Open",
     "closed": "Closed",
     "noOpeningHours": "Opening hours information not available",
     "searchPlaceholder": "Search by name or address",

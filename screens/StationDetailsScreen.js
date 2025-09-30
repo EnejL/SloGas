@@ -21,6 +21,67 @@ const StationDetailsScreen = ({ route, navigation }) => {
     navigation.setOptions({ title: station.name });
   }, [navigation, station]);
 
+  // Determine if the station is open "right now"
+  const isStationOpenNow = () => {
+    const openingHours = station.opening_hours || station.open_hours;
+
+    if (openingHours === "24/7") return true;
+    if (openingHours === "closed") return false;
+    if (!openingHours) return null;
+
+    if (Array.isArray(openingHours)) {
+      const now = new Date();
+      const currentDay = now.getDay();
+      const currentMonth = now.getMonth() + 1;
+      const currentTime = now.getHours() * 60 + now.getMinutes();
+
+      const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+      const todayCode = dayMap[currentDay];
+
+      const relevantSchedules = openingHours.filter(schedule => {
+        if (schedule.months && schedule.months.length > 0) {
+          if (!schedule.months.includes(currentMonth)) return false;
+        }
+        return schedule.days.includes(todayCode);
+      });
+
+      for (const schedule of relevantSchedules) {
+        for (const timeSlot of schedule.times) {
+          const [fromHour, fromMin] = timeSlot.from.split(':').map(Number);
+          const [toHour, toMin] = timeSlot.to.split(':').map(Number);
+          const fromTime = fromHour * 60 + fromMin;
+          const toTime = toHour * 60 + toMin;
+          if (currentTime >= fromTime && currentTime <= toTime) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    return null;
+  };
+
+  const openStatus = isStationOpenNow();
+
+  const openStatusBadge = () => {
+    if (openStatus === true) {
+      return (
+        <View style={[styles.statusBadge, styles.statusOpen]}>
+          <Text style={styles.statusText}>{t("petrolStations.open")}</Text>
+        </View>
+      );
+    }
+    if (openStatus === false) {
+      return (
+        <View style={[styles.statusBadge, styles.statusClosed]}>
+          <Text style={styles.statusText}>{t("petrolStations.closed")}</Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   const openMapsApp = () => {
     const scheme = Platform.select({
       ios: "maps:0,0?q=",
@@ -193,7 +254,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
       // Handle legacy string format
       if (typeof openingHoursData === "string") {
         const lines = openingHoursData
-          .replace(/\\r/g, "")
+          .replace(/\r/g, "")
           .split(/\r?\n/)
           .filter((line) => line.trim().length > 0);
 
@@ -260,7 +321,10 @@ const StationDetailsScreen = ({ route, navigation }) => {
       </Surface>
 
       <Surface style={styles.infoContainer}>
-        <Title style={styles.title}>{station.name}</Title>
+        <View style={styles.titleRow}>
+          <Title style={styles.title}>{station.name}</Title>
+          {openStatusBadge()}
+        </View>
         <View style={styles.addressContainer}>
           <MaterialIcons name="location-on" size={20} color="#666" />
           <Paragraph style={styles.address}>
@@ -369,9 +433,32 @@ const styles = StyleSheet.create({
     elevation: 2,
     backgroundColor: '#fff'
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   title: {
     fontSize: 22,
     marginBottom: 8,
+    flexShrink: 1,
+    marginRight: 12,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusOpen: {
+    backgroundColor: '#e8f5e9',
+  },
+  statusClosed: {
+    backgroundColor: '#ffebee',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#333',
   },
   addressContainer: {
     flexDirection: "row",
