@@ -2,6 +2,7 @@ const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const fetch = require("node-fetch");
+const { parseOpenHours } = require("./parser.js");
 
 // Make sure admin is initialized properly
 admin.initializeApp();
@@ -51,12 +52,20 @@ const fetchFuelDataLogic = async () => {
       allResults = [...allResults, ...data.results];
     }
 
+    const processedResults = allResults.map(station => {
+      const parsedHours = parseOpenHours(station.open_hours);
+      return {
+        ...station,
+        open_hours: parsedHours,
+      };
+    });
+
     // Create the final data structure
     const finalData = {
-      count: allResults.length,
+      count: processedResults.length,
       next: null,
       previous: null,
-      results: allResults,
+      results: processedResults,
       position: null,
     };
 
