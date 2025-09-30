@@ -542,11 +542,18 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
             key={station.pk}
             coordinate={{ latitude: station.lat, longitude: station.lng }}
             tracksViewChanges={false}
+            // onPress={() => onMarkerPress(station)}
           >
-            <Callout
-              tooltip
-              onPress={() => onMarkerPress(station)}
-            >
+            {(() => {
+              const isOpen = isStationOpen(station);
+              const color = isOpen === true ? '#2e7d32' : isOpen === false ? '#d32f2f' : '#9e9e9e';
+              return (
+                <View style={styles.markerWrapper}>
+                  <MaterialIcons name="place" size={40} color={color} />
+                </View>
+              );
+            })()}
+            <Callout tooltip onPress={() => onMarkerPress(station)}>
               <View style={styles.calloutContainer}>
                 <Text style={styles.calloutTitle}>{station.name}</Text>
                 <Text style={styles.calloutAddress}>{station.address}</Text>
@@ -703,6 +710,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     textAlign: "center",
+  },
+  markerWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  markerDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: '#ffffff',
+    elevation: 3,
   },
 });
 
