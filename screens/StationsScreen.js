@@ -196,11 +196,14 @@ const StationsScreen = ({ navigation }) => {
     }
   }, [t]);
 
+  useEffect(() => {
+    loadStations();
+  }, [loadStations]);
+
   useFocusEffect(
     React.useCallback(() => {
-      loadStations();
       fetchFavoriteIds(); // Re-fetch favorites when screen is focused
-    }, [loadStations, fetchFavoriteIds])
+    }, [fetchFavoriteIds])
   );
   
   const favoriteStations = React.useMemo(() => 
