@@ -23,6 +23,7 @@ import { db } from "../utils/firebase";
 import { useFocusEffect } from "@react-navigation/native";
 import { addToFavorites, removeFromFavorites, getFavoriteIds } from "../utils/favorites";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import StatusBadge from "../components/StatusBadge";
 
 const initialLayout = { width: Dimensions.get("window").width };
 
@@ -342,6 +343,13 @@ const StationListScreen = ({
   const renderItem = useCallback(({ item }) => {
     // FIX: Use item.pk to check if the station is favorited
     const isFavorited = favoriteStationIds.has(item.pk);
+    const openState = isStationOpen(item);
+    const statusKey = openState === true ? "open" : openState === false ? "closed" : "unknown";
+    const statusLabel = openState === true
+      ? t("petrolStations.open")
+      : openState === false
+        ? t("petrolStations.closed")
+        : t("petrolStations.unknown");
     return (
       <TouchableOpacity
         style={styles.stationItem}
@@ -352,6 +360,7 @@ const StationListScreen = ({
             <Text style={styles.stationName}>{item.name}</Text>
             <Text style={styles.stationAddress}>{item.address}</Text>
           </View>
+          <StatusBadge label={statusLabel} status={statusKey} style={{ marginHorizontal: 8, alignSelf: 'center' }} />
           <TouchableOpacity
             style={styles.favoriteButton}
             // FIX: Pass item.pk to the toggle function
@@ -542,11 +551,18 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
             key={station.pk}
             coordinate={{ latitude: station.lat, longitude: station.lng }}
             tracksViewChanges={false}
+            // onPress={() => onMarkerPress(station)}
           >
-            <Callout
-              tooltip
-              onPress={() => onMarkerPress(station)}
-            >
+            {(() => {
+              const isOpen = isStationOpen(station);
+              const color = isOpen === true ? '#2e7d32' : isOpen === false ? '#d32f2f' : '#9e9e9e';
+              return (
+                <View style={styles.markerWrapper}>
+                  <MaterialIcons name="place" size={40} color={color} />
+                </View>
+              );
+            })()}
+            <Callout tooltip onPress={() => onMarkerPress(station)}>
               <View style={styles.calloutContainer}>
                 <Text style={styles.calloutTitle}>{station.name}</Text>
                 <Text style={styles.calloutAddress}>{station.address}</Text>
@@ -703,6 +719,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     textAlign: "center",
+  },
+  markerWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  markerDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: '#ffffff',
+    elevation: 3,
   },
 });
 

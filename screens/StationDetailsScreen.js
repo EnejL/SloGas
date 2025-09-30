@@ -11,6 +11,7 @@ import { Surface, Title, Paragraph, Divider, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { MaterialIcons } from "@expo/vector-icons";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import StatusBadge from "../components/StatusBadge";
 
 const StationDetailsScreen = ({ route, navigation }) => {
   const { station } = route.params;
@@ -63,24 +64,12 @@ const StationDetailsScreen = ({ route, navigation }) => {
   };
 
   const openStatus = isStationOpenNow();
-
-  const openStatusBadge = () => {
-    if (openStatus === true) {
-      return (
-        <View style={[styles.statusBadge, styles.statusOpen]}>
-          <Text style={styles.statusText}>{t("petrolStations.open")}</Text>
-        </View>
-      );
-    }
-    if (openStatus === false) {
-      return (
-        <View style={[styles.statusBadge, styles.statusClosed]}>
-          <Text style={styles.statusText}>{t("petrolStations.closed")}</Text>
-        </View>
-      );
-    }
-    return null;
-  };
+  const statusKey = openStatus === true ? "open" : openStatus === false ? "closed" : "unknown";
+  const statusLabel = openStatus === true
+    ? t("petrolStations.open")
+    : openStatus === false
+      ? t("petrolStations.closed")
+      : t("petrolStations.unknown");
 
   const openMapsApp = () => {
     const scheme = Platform.select({
@@ -323,7 +312,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
       <Surface style={styles.infoContainer}>
         <View style={styles.titleRow}>
           <Title style={styles.title}>{station.name}</Title>
-          {openStatusBadge()}
+          <StatusBadge label={statusLabel} status={statusKey} />
         </View>
         <View style={styles.addressContainer}>
           <MaterialIcons name="location-on" size={20} color="#666" />
