@@ -139,3 +139,7 @@ Or simply open the URL in your browser.
 4. Click the URL to trigger it
 
 The function will fetch all petrol station data, parse the opening hours, and update Firestore immediately.
+
+## Future Plans
+
+Home Screen Widgets: Implement home screen widgets for both iOS and Android to provide users with quick access to information, such as the location and price of the nearest petrol station.

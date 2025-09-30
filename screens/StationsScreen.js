@@ -114,6 +114,19 @@ const StationsScreen = ({ navigation }) => {
   const [error, setError] = useState(null);
   const [favoriteStationIds, setFavoriteStationIds] = useState(new Set());
   const [index, setIndex] = useState(0);
+  const [routes, setRoutes] = useState([
+    { key: 'map', title: t('petrolStations.map') },
+    { key: 'list', title: t('petrolStations.list') },
+    { key: 'favorites', title: t('petrolStations.favorites') },
+  ]);
+
+  useEffect(() => {
+    setRoutes([
+      { key: 'map', title: t('petrolStations.map') },
+      { key: 'list', title: t('petrolStations.list') },
+      { key: 'favorites', title: t('petrolStations.favorites') },
+    ]);
+  }, [t]);
 
   // Add a settings icon to the header
   useLayoutEffect(() => {
@@ -128,12 +141,6 @@ const StationsScreen = ({ navigation }) => {
       ),
     });
   }, [navigation]);
-
-  const [routes] = useState([
-    { key: 'map', title: t('petrolStations.map') },
-    { key: 'list', title: t('petrolStations.list') },
-    { key: 'favorites', title: t('petrolStations.favorites') },
-  ]);
 
   const fetchFavoriteIds = useCallback(async () => {
       try {
@@ -276,6 +283,11 @@ const StationsScreen = ({ navigation }) => {
             labelStyle={{ color: 'black', fontWeight: 'bold' }}
             activeColor={'#000000'}
             inactiveColor={'#777777'}
+            renderLabel={({ route }) => (
+              <Text style={{ color: 'black', fontWeight: 'bold' }}>
+                {route.key === 'map' ? t('petrolStations.map') : route.key === 'list' ? t('petrolStations.list') : t('petrolStations.favorites')}
+              </Text>
+            )}
           />
         )}
       />

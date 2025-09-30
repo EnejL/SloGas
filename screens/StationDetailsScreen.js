@@ -71,6 +71,28 @@ const StationDetailsScreen = ({ route, navigation }) => {
       ? t("petrolStations.closed")
       : t("petrolStations.unknown");
 
+  useEffect(() => {
+    try {
+      const prices = station && station.prices ? station.prices : {};
+      console.log('════════════════════════════════════════');
+      console.log('STATION PRICES DEBUG');
+      console.log('Name:', station?.name, '| pk:', station?.pk);
+      console.log('Raw prices object:', JSON.stringify(prices, null, 2));
+      const entries = Object.entries(prices || {});
+      if (entries.length === 0) {
+        console.log('No prices available for this station.');
+      } else {
+        console.log('Parsed price entries:');
+        entries.forEach(([fuelKey, value]) => {
+          console.log(`  ${fuelKey}: ${value}`);
+        });
+      }
+      console.log('════════════════════════════════════════');
+    } catch (e) {
+      console.log('Error logging station prices:', e?.message || e);
+    }
+  }, [station]);
+
   const openMapsApp = () => {
     const scheme = Platform.select({
       ios: "maps:0,0?q=",
@@ -195,7 +217,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
               if (daysArray.length === 7 || (daysArray.length === 6 && !daysArray.includes('holiday'))) {
                 return (
                   <Text key={index} style={styles.hourText}>
-                    Every day: {timesText}
+                    {t("days.everyDay")}: {timesText}
                   </Text>
                 );
               }
@@ -208,7 +230,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
               if (onlyWeekdays) {
                 return (
                   <Text key={index} style={styles.hourText}>
-                    Mon-Fri: {timesText}
+                    {t("days.monFri")}: {timesText}
                   </Text>
                 );
               }
@@ -220,7 +242,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
               if (onlyWeekend) {
                 return (
                   <Text key={index} style={styles.hourText}>
-                    Sat-Sun: {timesText}
+                    {t("days.satSun")}: {timesText}
                   </Text>
                 );
               }
@@ -358,30 +380,56 @@ const StationDetailsScreen = ({ route, navigation }) => {
           <>
             <Title style={styles.sectionTitle}>{t("petrolStations.prices")}</Title>
             <View style={styles.pricesContainer}>
-              {station.prices["95"] && (
-                <View style={styles.priceCard}>
-                  <Text style={styles.fuelType}>95</Text>
-                  <Text style={styles.priceValue}>{station.prices["95"]} €</Text>
-                </View>
-              )}
-              {station.prices["dizel"] && (
-                <View style={styles.priceCard}>
-                  <Text style={styles.fuelType}>Dizel</Text>
-                  <Text style={styles.priceValue}>{station.prices["dizel"]} €</Text>
-                </View>
-              )}
-               {station.prices["98"] && (
-                <View style={styles.priceCard}>
-                  <Text style={styles.fuelType}>98</Text>
-                  <Text style={styles.priceValue}>{station.prices["98"]} €</Text>
-                </View>
-              )}
-              {station.prices["100"] && (
-                <View style={styles.priceCard}>
-                  <Text style={styles.fuelType}>100</Text>
-                  <Text style={styles.priceValue}>{station.prices["100"]} €</Text>
-                </View>
-              )}
+              {(() => {
+                const prices = station.prices || {};
+                const entries = Object.entries(prices)
+                  .filter(([_, val]) => val !== null && val !== undefined && val !== "")
+                  .map(([key, val]) => [key.toString(), val]);
+
+                if (entries.length === 0) {
+                  return (
+                    <Text style={styles.hourText}>{t("petrolStations.noOpeningHours")}</Text>
+                  );
+                }
+
+                const labelMap = {
+                  "95": "95",
+                  "98": "98",
+                  "100": "100",
+                  "dizel": "diesel",
+                  "dizel-premium": "dieselPremium",
+                  "avtoplin-lpg": "lpg",
+                  "lpg": "lpg",
+                  "cng": "cng",
+                  "lng": "lng",
+                  "hvo": "hvo",
+                  "koel": "heatingOil"
+                };
+
+                const order = [
+                  "95","98","100","dizel","dizel-premium","avtoplin-lpg","lpg","cng","lng","hvo","koel"
+                ];
+                const orderIndex = (k) => {
+                  const idx = order.indexOf(k.toLowerCase());
+                  return idx === -1 ? 999 : idx;
+                };
+                const toLabel = (k) => {
+                  const key = labelMap[k.toLowerCase()];
+                  if (key) {
+                    return t(`petrolStations.fuels.${key}`);
+                  }
+                  return k.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                };
+
+                const sorted = entries.sort((a, b) => orderIndex(a[0]) - orderIndex(b[0]));
+
+                return sorted.map(([fuelKey, value]) => (
+                  <View key={fuelKey} style={styles.priceCard}>
+                    <Text style={styles.fuelType}>{toLabel(fuelKey)}</Text>
+                    <Text style={styles.priceValue}>{value} €</Text>
+                  </View>
+                ));
+              })()}
             </View>
           </>
         )}
@@ -483,6 +531,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     marginBottom: 8,
+    textAlign: 'center', // Added for centering
   },
   priceValue: {
     fontSize: 24,
