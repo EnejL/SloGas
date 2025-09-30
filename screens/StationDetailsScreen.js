@@ -75,14 +75,109 @@ const StationDetailsScreen = ({ route, navigation }) => {
           holiday: t("days.holiday"),
         };
 
+        const dayOrder = ["mon", "tue", "wed", "thu", "fri", "sat", "sun", "holiday"];
+
+        // Get current month (1-12)
+        const currentMonth = new Date().getMonth() + 1;
+
+        // Check if schedule has months (seasonal hours)
+        const hasMonths = openingHoursData.some(schedule => schedule.months && schedule.months.length > 0);
+
+        // Filter schedules to show only current month's data
+        let relevantSchedules = openingHoursData;
+        if (hasMonths) {
+          relevantSchedules = openingHoursData.filter(schedule => {
+            // If no months specified, it applies to all months
+            if (!schedule.months || schedule.months.length === 0) return true;
+            // Otherwise, check if current month is in the schedule
+            return schedule.months.includes(currentMonth);
+          });
+        }
+
+        // Deduplicate overlapping schedules with different times
+        // If we have multiple schedules with all days but different times, 
+        // we need to figure out which days actually belong to which times
+        let processedSchedules = relevantSchedules;
+        
+        // Check if we have duplicate "all days" entries
+        const allDaySchedules = relevantSchedules.filter(s => s.days.length === 7);
+        if (allDaySchedules.length > 1) {
+          // Sort by time (earlier times first)
+          allDaySchedules.sort((a, b) => {
+            const timeA = a.times[0].from;
+            const timeB = b.times[0].from;
+            return timeA.localeCompare(timeB);
+          });
+          
+          // Assume first one is weekdays, second is weekends/holidays
+          // This is a heuristic based on common patterns
+          processedSchedules = relevantSchedules.filter(s => s.days.length !== 7).concat([
+            { ...allDaySchedules[0], days: ["mon", "tue", "wed", "thu", "fri", "sat"] },
+            { ...allDaySchedules[1], days: ["sun", "holiday"] }
+          ]);
+        }
+
+        // Group schedules by identical times to consolidate display
+        const groupedByTimes = {};
+        processedSchedules.forEach(schedule => {
+          const timesKey = schedule.times.map(t => `${t.from}-${t.to}`).join(',');
+          if (!groupedByTimes[timesKey]) {
+            groupedByTimes[timesKey] = {
+              times: schedule.times,
+              days: new Set()
+            };
+          }
+          schedule.days.forEach(day => groupedByTimes[timesKey].days.add(day));
+        });
+
         return (
           <View style={styles.hoursContainer}>
-            {openingHoursData.map((schedule, index) => {
-              const daysText = schedule.days
-                .map((day) => dayNames[day] || day)
-                .join(", ");
-              const timesText = schedule.times
+            {Object.values(groupedByTimes).map((group, index) => {
+              const timesText = group.times
                 .map((time) => `${time.from} - ${time.to}`)
+                .join(", ");
+
+              const daysArray = Array.from(group.days).sort((a, b) => 
+                dayOrder.indexOf(a) - dayOrder.indexOf(b)
+              );
+
+              // If all 7 days (or 6 without holiday) have the same hours, show "Every day"
+              if (daysArray.length === 7 || (daysArray.length === 6 && !daysArray.includes('holiday'))) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    Every day: {timesText}
+                  </Text>
+                );
+              }
+
+              // Check for weekdays pattern (mon-fri)
+              const weekdays = ["mon", "tue", "wed", "thu", "fri"];
+              const hasAllWeekdays = weekdays.every(day => daysArray.includes(day));
+              const onlyWeekdays = daysArray.length === 5 && hasAllWeekdays;
+
+              if (onlyWeekdays) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    Mon-Fri: {timesText}
+                  </Text>
+                );
+              }
+
+              // Check for weekend pattern
+              const hasWeekend = daysArray.includes('sat') && daysArray.includes('sun');
+              const onlyWeekend = daysArray.length === 2 && hasWeekend;
+
+              if (onlyWeekend) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    Sat-Sun: {timesText}
+                  </Text>
+                );
+              }
+
+              // Otherwise show individual days
+              const daysText = daysArray
+                .map((day) => dayNames[day] || day)
                 .join(", ");
 
               return (
