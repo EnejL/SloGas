@@ -125,6 +125,16 @@
     "privacyPolicy": "Politika zasebnosti",
     "termsOfUse": "Pogoji uporabe"
   },
+  "days": {
+    "monday": "Ponedeljek",
+    "tuesday": "Torek",
+    "wednesday": "Sreda",
+    "thursday": "Četrtek",
+    "friday": "Petek",
+    "saturday": "Sobota",
+    "sunday": "Nedelja",
+    "holiday": "Praznik"
+  },
   "common": {
     "loading": "Nalaganje...",
     "save": "Shrani",

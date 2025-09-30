@@ -125,6 +125,16 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use"
   },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "holiday": "Holiday"
+  },
   "common": {
     "loading": "Loading...",
     "save": "Save",

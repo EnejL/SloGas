@@ -1,4 +1,14 @@
 {
+  "days": {
+    "monday": "Lunedì",
+    "tuesday": "Martedì",
+    "wednesday": "Mercoledì",
+    "thursday": "Giovedì",
+    "friday": "Venerdì",
+    "saturday": "Sabato",
+    "sunday": "Domenica",
+    "holiday": "Festivo"
+  },
   "settings": {
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
@@ -17,6 +27,7 @@
     "viewDetails": "View Details",
     "openingHours": "Opening Hours",
     "open24Hours": "Open 24/7",
+    "closed": "Chiuso",
     "noOpeningHours": "Opening hours not available.",
     "prices": "Fuel Prices",
     "getDirections": "Get Directions"

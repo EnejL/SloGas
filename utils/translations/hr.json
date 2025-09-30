@@ -1,4 +1,14 @@
 {
+  "days": {
+    "monday": "Ponedjeljak",
+    "tuesday": "Utorak",
+    "wednesday": "Srijeda",
+    "thursday": "Četvrtak",
+    "friday": "Petak",
+    "saturday": "Subota",
+    "sunday": "Nedjelja",
+    "holiday": "Praznik"
+  },
   "settings": {
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
@@ -17,6 +27,7 @@
     "viewDetails": "View Details",
     "openingHours": "Opening Hours",
     "open24Hours": "Open 24/7",
+    "closed": "Zatvoreno",
     "noOpeningHours": "Opening hours not available.",
     "prices": "Fuel Prices",
     "getDirections": "Get Directions"

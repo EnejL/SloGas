@@ -38,12 +38,66 @@ const StationDetailsScreen = ({ route, navigation }) => {
   };
 
   const formatOpeningHours = () => {
-    const openingHoursText = station.opening_hours || station.open_hours;
-    if (!openingHoursText) return null;
+    const openingHoursData = station.opening_hours || station.open_hours;
+    if (!openingHoursData) return null;
 
     try {
-      if (typeof openingHoursText === "string") {
-        const lines = openingHoursText
+      // Handle special cases
+      if (openingHoursData === "24/7") {
+        return (
+          <View style={styles.open24Container}>
+            <MaterialIcons name="access-time" size={20} color="#2e7d32" />
+            <Text style={styles.open24Text}>
+              {t("petrolStations.open24Hours")}
+            </Text>
+          </View>
+        );
+      }
+
+      if (openingHoursData === "closed") {
+        return (
+          <View style={styles.hoursContainer}>
+            <Text style={styles.hourText}>{t("petrolStations.closed")}</Text>
+          </View>
+        );
+      }
+
+      // Handle structured array format
+      if (Array.isArray(openingHoursData)) {
+        const dayNames = {
+          mon: t("days.monday"),
+          tue: t("days.tuesday"),
+          wed: t("days.wednesday"),
+          thu: t("days.thursday"),
+          fri: t("days.friday"),
+          sat: t("days.saturday"),
+          sun: t("days.sunday"),
+          holiday: t("days.holiday"),
+        };
+
+        return (
+          <View style={styles.hoursContainer}>
+            {openingHoursData.map((schedule, index) => {
+              const daysText = schedule.days
+                .map((day) => dayNames[day] || day)
+                .join(", ");
+              const timesText = schedule.times
+                .map((time) => `${time.from} - ${time.to}`)
+                .join(", ");
+
+              return (
+                <Text key={index} style={styles.hourText}>
+                  {daysText}: {timesText}
+                </Text>
+              );
+            })}
+          </View>
+        );
+      }
+
+      // Handle legacy string format
+      if (typeof openingHoursData === "string") {
+        const lines = openingHoursData
           .replace(/\\r/g, "")
           .split(/\r?\n/)
           .filter((line) => line.trim().length > 0);
@@ -72,13 +126,8 @@ const StationDetailsScreen = ({ route, navigation }) => {
           );
         }
       }
-      
-      // Fallback for non-string or empty strings
-      return (
-        <View style={styles.hoursContainer}>
-          <Text style={styles.hourText}>{openingHoursText}</Text>
-        </View>
-      );
+
+      return null;
     } catch (error) {
       console.error("Error handling opening hours:", error);
       return null;

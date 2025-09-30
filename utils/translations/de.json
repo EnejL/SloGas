@@ -1,4 +1,14 @@
 {
+  "days": {
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag",
+    "sunday": "Sonntag",
+    "holiday": "Feiertag"
+  },
   "settings": {
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
@@ -17,6 +27,7 @@
     "viewDetails": "View Details",
     "openingHours": "Opening Hours",
     "open24Hours": "Open 24/7",
+    "closed": "Geschlossen",
     "noOpeningHours": "Opening hours not available.",
     "prices": "Fuel Prices",
     "getDirections": "Get Directions"
