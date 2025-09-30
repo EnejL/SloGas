@@ -1,4 +1,7 @@
 {
+  "navigation": {
+    "settings": "Impostazioni"
+  },
   "days": {
     "monday": "Lunedì",
     "tuesday": "Martedì",
@@ -7,30 +10,128 @@
     "friday": "Venerdì",
     "saturday": "Sabato",
     "sunday": "Domenica",
-    "holiday": "Festivo"
+    "holiday": "Giorni festivi",
+    "everyDay": "Tutti i giorni",
+    "monFri": "Lun–Ven",
+    "satSun": "Sab–Dom"
   },
   "settings": {
-    "privacyPolicy": "Privacy Policy",
-    "termsOfUse": "Terms of Use",
-    "about": "About",
-    "language": "Language"
+    "title": "Impostazioni",
+    "privacyPolicy": "Informativa sulla privacy",
+    "termsOfUse": "Termini d'uso",
+    "about": "Informazioni",
+    "language": "Lingua"
   },
   "petrolStations": {
-    "map": "Map",
-    "list": "List",
-    "favorites": "Favorites",
-    "fetchError": "Could not fetch station data.",
-    "searchPlaceholder": "Search by name or address...",
-    "noFavorites": "You have not added any favorite stations yet.",
-    "noSearchResults": "No stations found matching your search.",
-    "empty": "No stations to display.",
-    "viewDetails": "View Details",
-    "openingHours": "Opening Hours",
-    "open24Hours": "Open 24/7",
+    "title": "Stazioni di servizio",
+    "map": "Mappa",
+    "list": "Elenco",
+    "favorites": "Preferiti",
+    "fetchError": "Impossibile caricare i dati delle stazioni.",
+    "searchPlaceholder": "Cerca per nome o indirizzo...",
+    "noFavorites": "Non hai ancora aggiunto stazioni preferite.",
+    "noSearchResults": "Nessuna stazione trovata per la tua ricerca.",
+    "empty": "Nessuna stazione da mostrare.",
+    "viewDetails": "Dettagli",
+    "openingHours": "Orari di apertura",
+    "open24Hours": "Aperto 24/7",
     "open": "Aperto",
     "closed": "Chiuso",
-    "noOpeningHours": "Opening hours not available.",
-    "prices": "Fuel Prices",
-    "getDirections": "Get Directions"
+    "unknown": "Sconosciuto",
+    "noOpeningHours": "Orari non disponibili.",
+    "prices": "Prezzi carburante",
+    "getDirections": "Indicazioni",
+    "fuels": {
+      "diesel": "Diesel",
+      "dieselPremium": "Diesel Premium",
+      "95": "95",
+      "98": "98",
+      "100": "100",
+      "lpg": "GPL",
+      "cng": "Metano (CNG)",
+      "lng": "GNL (LNG)",
+      "hvo": "HVO",
+      "heatingOil": "Gasolio da riscaldamento"
+    }
+  },
+  "privacyPolicy": {
+    "title": "Informativa sulla Privacy di SloGas",
+    "lastUpdated": "Ultimo Aggiornamento: 30 settembre 2025",
+    "sections": [
+      {
+        "title": "1. Informazioni che Raccogliamo",
+        "content": "SloGas è un'applicazione semplice, senza login. Raccogliamo una quantità minima di informazioni per fornire e migliorare il nostro servizio.",
+        "bulletPoints": [
+          "Dati sulla Posizione (Opzionale): Se concedete l'autorizzazione, l'app può accedere alla posizione del vostro dispositivo per mostrare le stazioni vicine e la vostra posizione sulla mappa. Questi dati vengono utilizzati solo mentre l'app è attiva e non vengono memorizzati o condivisi. Potete utilizzare l'app senza concedere l'autorizzazione alla posizione.",
+          "Dati di Utilizzo Anonimi: L'app utilizza analisi standard e non identificabili personalmente (ad es. tramite Firebase Analytics) per comprendere il comportamento degli utenti, come quali funzionalità vengono utilizzate più spesso e per identificare arresti anomali. Questo ci aiuta a migliorare l'app. Questi dati sono aggregati e non possono essere utilizzati per identificarvi personalmente."
+        ]
+      },
+      {
+        "title": "2. Come Utilizziamo le Vostre Informazioni",
+        "content": "",
+        "bulletPoints": [
+          "Per Fornire il Servizio: I dati sulla posizione vengono utilizzati per personalizzare la visualizzazione della mappa in base alla vostra vicinanza.",
+          "Per Migliorare l'App: I dati di utilizzo anonimi ci aiutano a capire come viene utilizzata l'app, permettendoci di correggere bug e migliorare l'esperienza utente."
+        ]
+      },
+      {
+        "title": "3. Informazioni che Non Raccogliamo",
+        "content": "Non raccogliamo alcuna informazione di identificazione personale (PII) come nome, indirizzo email, numero di telefono o identificatori del dispositivo. L'app non ha account utente o funzionalità di login."
+      },
+      {
+        "title": "4. Condivisione delle Informazioni",
+        "content": "Non vendiamo, scambiamo o trasferiamo in altro modo le vostre informazioni a terzi. I dati di utilizzo anonimi e aggregati possono essere utilizzati per analisi interne ma non vengono condivisi in modo che possa identificare un singolo utente."
+      },
+      {
+        "title": "5. Il Vostro Consenso",
+        "content": "Utilizzando la nostra app, acconsentite alla nostra Informativa sulla Privacy."
+      },
+      {
+        "title": "6. Modifiche alla Nostra Informativa sulla Privacy",
+        "content": "Se decidiamo di modificare la nostra informativa sulla privacy, pubblicheremo tali modifiche su questa pagina e aggiorneremo la data di \"Ultimo Aggiornamento\"."
+      },
+      {
+        "title": "7. Contattateci",
+        "content": "Se avete domande riguardo a questa informativa sulla privacy, potete contattarci."
+      }
+    ]
+  },
+  "termsOfUse": {
+    "title": "Termini e Condizioni di SloGas",
+    "lastUpdated": "Ultimo Aggiornamento: 30 settembre 2025",
+    "sections": [
+      {
+        "title": "1. Accettazione dei Termini",
+        "content": "Accedendo e utilizzando questa app, accettate di essere vincolati dai termini e dalle disposizioni del presente accordo. Se non siete d'accordo, vi preghiamo di non utilizzare l'app."
+      },
+      {
+        "title": "2. Descrizione del Servizio",
+        "content": "SloGas è un'applicazione mobile informativa e gratuita che fornisce agli utenti le posizioni e i dettagli delle stazioni di servizio e di ricarica per veicoli elettrici in Slovenia. I dati sono forniti solo a scopo informativo."
+      },
+      {
+        "title": "3. Uso dell'App",
+        "content": "Accettate di utilizzare SloGas solo per lo scopo previsto. Siete gli unici responsabili per qualsiasi azione intrapresa sulla base delle informazioni fornite all'interno dell'app (ad es. la navigazione verso una stazione)."
+      },
+      {
+        "title": "4. Accuratezza dei Dati",
+        "content": "I dati delle stazioni, inclusi prezzi e posizioni, provengono da fornitori terzi tramite Firebase. Sebbene ci sforziamo di garantire l'accuratezza, non garantiamo che le informazioni siano sempre complete, accurate o aggiornate. I prezzi e la disponibilità delle stazioni possono cambiare rapidamente."
+      },
+      {
+        "title": "5. Proprietà Intellettuale",
+        "content": "L'app e i suoi contenuti, le sue caratteristiche e le sue funzionalità originali sono di proprietà del creatore dell'app e sono protetti da copyright internazionale e altre leggi sulla proprietà intellettuale."
+      },
+      {
+        "title": "6. Limitazione di Responsabilità",
+        "content": "In nessun caso SloGas o il suo proprietario saranno responsabili per danni diretti, indiretti, incidentali o consequenziali derivanti dall'uso o dall'impossibilità di utilizzare il servizio, incluse eventuali imprecisioni o omissioni nei dati."
+      },
+      {
+        "title": "7. Modifiche ai Termini",
+        "content": "Ci riserviamo il diritto di modificare questi termini e condizioni in qualsiasi momento. Gli utenti saranno informati di eventuali modifiche aggiornando la data di \"Ultimo Aggiornamento\" di questo accordo."
+      },
+      {
+        "title": "8. Legge Applicabile",
+        "content": "Questi termini saranno regolati e interpretati in conformità con le leggi della Slovenia."
+      }
+    ]
   }
 }

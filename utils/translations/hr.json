@@ -1,4 +1,7 @@
 {
+  "navigation": {
+    "settings": "Postavke"
+  },
   "days": {
     "monday": "Ponedjeljak",
     "tuesday": "Utorak",
@@ -7,30 +10,128 @@
     "friday": "Petak",
     "saturday": "Subota",
     "sunday": "Nedjelja",
-    "holiday": "Praznik"
+    "holiday": "Praznik",
+    "everyDay": "Svaki dan",
+    "monFri": "Pon–Pet",
+    "satSun": "Sub–Ned"
   },
   "settings": {
-    "privacyPolicy": "Privacy Policy",
-    "termsOfUse": "Terms of Use",
-    "about": "About",
-    "language": "Language"
+    "title": "Postavke",
+    "privacyPolicy": "Pravila privatnosti",
+    "termsOfUse": "Uvjeti korištenja",
+    "about": "O aplikaciji",
+    "language": "Jezik"
   },
   "petrolStations": {
-    "map": "Map",
-    "list": "List",
-    "favorites": "Favorites",
-    "fetchError": "Could not fetch station data.",
-    "searchPlaceholder": "Search by name or address...",
-    "noFavorites": "You have not added any favorite stations yet.",
-    "noSearchResults": "No stations found matching your search.",
-    "empty": "No stations to display.",
-    "viewDetails": "View Details",
-    "openingHours": "Opening Hours",
-    "open24Hours": "Open 24/7",
+    "title": "Benzinske postaje",
+    "map": "Karta",
+    "list": "Popis",
+    "favorites": "Favoriti",
+    "fetchError": "Greška pri učitavanju podataka o postajama.",
+    "searchPlaceholder": "Traži po nazivu ili adresi...",
+    "noFavorites": "Još niste dodali omiljene postaje.",
+    "noSearchResults": "Nema rezultata pretrage.",
+    "empty": "Nema postaja za prikaz.",
+    "viewDetails": "Detalji",
+    "openingHours": "Radno vrijeme",
+    "open24Hours": "Otvoreno 24/7",
     "open": "Otvoreno",
     "closed": "Zatvoreno",
-    "noOpeningHours": "Opening hours not available.",
-    "prices": "Fuel Prices",
-    "getDirections": "Get Directions"
+    "unknown": "Nepoznato",
+    "noOpeningHours": "Radno vrijeme nije dostupno.",
+    "prices": "Cijene goriva",
+    "getDirections": "Upute",
+    "fuels": {
+      "diesel": "Dizel",
+      "dieselPremium": "Dizel Premium",
+      "95": "95",
+      "98": "98",
+      "100": "100",
+      "lpg": "LPG (Autoplin)",
+      "cng": "CNG (Stlačeni plin)",
+      "lng": "LNG (Uk. prirodni plin)",
+      "hvo": "HVO",
+      "heatingOil": "Lož ulje"
+    }
+  },
+  "privacyPolicy": {
+    "title": "Pravila o privatnosti za SloGas",
+    "lastUpdated": "Zadnje ažuriranje: 30. rujna 2025.",
+    "sections": [
+      {
+        "title": "1. Podaci koje prikupljamo",
+        "content": "SloGas je jednostavna aplikacija bez prijave. Prikupljamo minimalnu količinu podataka kako bismo pružili i poboljšali našu uslugu.",
+        "bulletPoints": [
+          "Podaci o lokaciji (neobavezno): Ako date dopuštenje, aplikacija može pristupiti lokaciji vašeg uređaja kako bi prikazala obližnje postaje i vaš položaj na karti. Ti se podaci koriste samo dok je aplikacija aktivna i ne pohranjuju se niti dijele. Aplikaciju možete koristiti i bez davanja dopuštenja za lokaciju.",
+          "Anonimni podaci o korištenju: Aplikacija koristi standardnu, neosobnu analitiku (npr. putem Firebase Analytics) za razumijevanje ponašanja korisnika, kao što su najčešće korištene značajke i za identificiranje rušenja. To nam pomaže poboljšati aplikaciju. Ti su podaci agregirani i ne mogu se koristiti za vašu osobnu identifikaciju."
+        ]
+      },
+      {
+        "title": "2. Kako koristimo vaše podatke",
+        "content": "",
+        "bulletPoints": [
+          "Za pružanje usluge: Podaci o lokaciji koriste se za prilagodbu prikaza karte vašoj trenutnoj blizini.",
+          "Za poboljšanje aplikacije: Anonimni podaci o korištenju pomažu nam razumjeti kako se aplikacija koristi, što nam omogućuje ispravljanje grešaka i poboljšanje korisničkog iskustva."
+        ]
+      },
+      {
+        "title": "3. Podaci koje ne prikupljamo",
+        "content": "Ne prikupljamo nikakve osobne identifikacijske podatke (PII) kao što su vaše ime, adresa e-pošte, telefonski broj ili identifikatori uređaja. Aplikacija nema korisničke račune niti funkcionalnost prijave."
+      },
+      {
+        "title": "4. Dijeljenje podataka",
+        "content": "Ne prodajemo, ne trgujemo niti na drugi način prenosimo vaše podatke trećim stranama. Anonimni, agregirani podaci o korištenju mogu se koristiti za internu analizu, ali se ne dijele na način koji bi mogao identificirati bilo kojeg pojedinog korisnika."
+      },
+      {
+        "title": "5. Vaša suglasnost",
+        "content": "Korištenjem naše aplikacije, pristajete na naša Pravila o privatnosti."
+      },
+      {
+        "title": "6. Promjene naših Pravila o privatnosti",
+        "content": "Ako odlučimo promijeniti naša pravila o privatnosti, objavit ćemo te promjene na ovoj stranici i ažurirati datum \"Zadnje ažuriranje\"."
+      },
+      {
+        "title": "7. Kontaktirajte nas",
+        "content": "Ako imate bilo kakvih pitanja u vezi s ovim pravilima o privatnosti, možete nas kontaktirati."
+      }
+    ]
+  },
+  "termsOfUse": {
+    "title": "Uvjeti korištenja za SloGas",
+    "lastUpdated": "Zadnje ažuriranje: 30. rujna 2025.",
+    "sections": [
+      {
+        "title": "1. Prihvaćanje uvjeta",
+        "content": "Pristupanjem i korištenjem ove aplikacije, prihvaćate i slažete se da ste vezani uvjetima ovog sporazuma. Ako se ne slažete s ovim uvjetima, molimo vas da ne koristite aplikaciju."
+      },
+      {
+        "title": "2. Opis usluge",
+        "content": "SloGas je besplatna, informativna mobilna aplikacija koja korisnicima pruža lokacije i detalje o benzinskim postajama i punionicama za električna vozila u Sloveniji. Podaci se pružaju samo u informativne svrhe."
+      },
+      {
+        "title": "3. Korištenje aplikacije",
+        "content": "Slažete se da ćete SloGas koristiti samo za njegovu predviđenu svrhu. Isključivo ste odgovorni za sve radnje koje poduzmete na temelju informacija pruženih unutar aplikacije (npr. navigacija do postaje)."
+      },
+      {
+        "title": "4. Točnost podataka",
+        "content": "Podaci o postajama, uključujući cijene i lokacije, potječu od trećih strana putem Firebasea. Iako težimo točnosti, ne jamčimo da će informacije uvijek biti potpune, točne ili ažurne. Cijene i dostupnost postaja mogu se brzo mijenjati."
+      },
+      {
+        "title": "5. Intelektualno vlasništvo",
+        "content": "Aplikacija i njezin izvorni sadržaj, značajke i funkcionalnost vlasništvo su kreatora aplikacije i zaštićeni su međunarodnim autorskim pravima i drugim zakonima o intelektualnom vlasništvu."
+      },
+      {
+        "title": "6. Ograničenje odgovornosti",
+        "content": "Ni u kojem slučaju SloGas ili njegov vlasnik neće biti odgovorni za bilo kakvu izravnu, neizravnu, slučajnu ili posljedičnu štetu koja proizlazi iz korištenja ili nemogućnosti korištenja usluge, uključujući bilo kakve netočnosti ili propuste u podacima."
+      },
+      {
+        "title": "7. Promjene uvjeta",
+        "content": "Zadržavamo pravo izmjene ovih uvjeta u bilo kojem trenutku. Obavijestit ćemo korisnike o bilo kakvim promjenama ažuriranjem datuma \"Zadnje ažuriranje\" ovog sporazuma."
+      },
+      {
+        "title": "8. Mjerodavno pravo",
+        "content": "Ovi uvjeti će se tumačiti i primjenjivati u skladu sa zakonima Slovenije."
+      }
+    ]
   }
 }
