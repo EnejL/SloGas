@@ -21,6 +21,67 @@ const StationDetailsScreen = ({ route, navigation }) => {
     navigation.setOptions({ title: station.name });
   }, [navigation, station]);
 
+  // Determine if the station is open "right now"
+  const isStationOpenNow = () => {
+    const openingHours = station.opening_hours || station.open_hours;
+
+    if (openingHours === "24/7") return true;
+    if (openingHours === "closed") return false;
+    if (!openingHours) return null;
+
+    if (Array.isArray(openingHours)) {
+      const now = new Date();
+      const currentDay = now.getDay();
+      const currentMonth = now.getMonth() + 1;
+      const currentTime = now.getHours() * 60 + now.getMinutes();
+
+      const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+      const todayCode = dayMap[currentDay];
+
+      const relevantSchedules = openingHours.filter(schedule => {
+        if (schedule.months && schedule.months.length > 0) {
+          if (!schedule.months.includes(currentMonth)) return false;
+        }
+        return schedule.days.includes(todayCode);
+      });
+
+      for (const schedule of relevantSchedules) {
+        for (const timeSlot of schedule.times) {
+          const [fromHour, fromMin] = timeSlot.from.split(':').map(Number);
+          const [toHour, toMin] = timeSlot.to.split(':').map(Number);
+          const fromTime = fromHour * 60 + fromMin;
+          const toTime = toHour * 60 + toMin;
+          if (currentTime >= fromTime && currentTime <= toTime) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    return null;
+  };
+
+  const openStatus = isStationOpenNow();
+
+  const openStatusBadge = () => {
+    if (openStatus === true) {
+      return (
+        <View style={[styles.statusBadge, styles.statusOpen]}>
+          <Text style={styles.statusText}>{t("petrolStations.open")}</Text>
+        </View>
+      );
+    }
+    if (openStatus === false) {
+      return (
+        <View style={[styles.statusBadge, styles.statusClosed]}>
+          <Text style={styles.statusText}>{t("petrolStations.closed")}</Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   const openMapsApp = () => {
     const scheme = Platform.select({
       ios: "maps:0,0?q=",
@@ -75,14 +136,109 @@ const StationDetailsScreen = ({ route, navigation }) => {
           holiday: t("days.holiday"),
         };
 
+        const dayOrder = ["mon", "tue", "wed", "thu", "fri", "sat", "sun", "holiday"];
+
+        // Get current month (1-12)
+        const currentMonth = new Date().getMonth() + 1;
+
+        // Check if schedule has months (seasonal hours)
+        const hasMonths = openingHoursData.some(schedule => schedule.months && schedule.months.length > 0);
+
+        // Filter schedules to show only current month's data
+        let relevantSchedules = openingHoursData;
+        if (hasMonths) {
+          relevantSchedules = openingHoursData.filter(schedule => {
+            // If no months specified, it applies to all months
+            if (!schedule.months || schedule.months.length === 0) return true;
+            // Otherwise, check if current month is in the schedule
+            return schedule.months.includes(currentMonth);
+          });
+        }
+
+        // Deduplicate overlapping schedules with different times
+        // If we have multiple schedules with all days but different times, 
+        // we need to figure out which days actually belong to which times
+        let processedSchedules = relevantSchedules;
+        
+        // Check if we have duplicate "all days" entries
+        const allDaySchedules = relevantSchedules.filter(s => s.days.length === 7);
+        if (allDaySchedules.length > 1) {
+          // Sort by time (earlier times first)
+          allDaySchedules.sort((a, b) => {
+            const timeA = a.times[0].from;
+            const timeB = b.times[0].from;
+            return timeA.localeCompare(timeB);
+          });
+          
+          // Assume first one is weekdays, second is weekends/holidays
+          // This is a heuristic based on common patterns
+          processedSchedules = relevantSchedules.filter(s => s.days.length !== 7).concat([
+            { ...allDaySchedules[0], days: ["mon", "tue", "wed", "thu", "fri", "sat"] },
+            { ...allDaySchedules[1], days: ["sun", "holiday"] }
+          ]);
+        }
+
+        // Group schedules by identical times to consolidate display
+        const groupedByTimes = {};
+        processedSchedules.forEach(schedule => {
+          const timesKey = schedule.times.map(t => `${t.from}-${t.to}`).join(',');
+          if (!groupedByTimes[timesKey]) {
+            groupedByTimes[timesKey] = {
+              times: schedule.times,
+              days: new Set()
+            };
+          }
+          schedule.days.forEach(day => groupedByTimes[timesKey].days.add(day));
+        });
+
         return (
           <View style={styles.hoursContainer}>
-            {openingHoursData.map((schedule, index) => {
-              const daysText = schedule.days
-                .map((day) => dayNames[day] || day)
-                .join(", ");
-              const timesText = schedule.times
+            {Object.values(groupedByTimes).map((group, index) => {
+              const timesText = group.times
                 .map((time) => `${time.from} - ${time.to}`)
+                .join(", ");
+
+              const daysArray = Array.from(group.days).sort((a, b) => 
+                dayOrder.indexOf(a) - dayOrder.indexOf(b)
+              );
+
+              // If all 7 days (or 6 without holiday) have the same hours, show "Every day"
+              if (daysArray.length === 7 || (daysArray.length === 6 && !daysArray.includes('holiday'))) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    Every day: {timesText}
+                  </Text>
+                );
+              }
+
+              // Check for weekdays pattern (mon-fri)
+              const weekdays = ["mon", "tue", "wed", "thu", "fri"];
+              const hasAllWeekdays = weekdays.every(day => daysArray.includes(day));
+              const onlyWeekdays = daysArray.length === 5 && hasAllWeekdays;
+
+              if (onlyWeekdays) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    Mon-Fri: {timesText}
+                  </Text>
+                );
+              }
+
+              // Check for weekend pattern
+              const hasWeekend = daysArray.includes('sat') && daysArray.includes('sun');
+              const onlyWeekend = daysArray.length === 2 && hasWeekend;
+
+              if (onlyWeekend) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    Sat-Sun: {timesText}
+                  </Text>
+                );
+              }
+
+              // Otherwise show individual days
+              const daysText = daysArray
+                .map((day) => dayNames[day] || day)
                 .join(", ");
 
               return (
@@ -98,7 +254,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
       // Handle legacy string format
       if (typeof openingHoursData === "string") {
         const lines = openingHoursData
-          .replace(/\\r/g, "")
+          .replace(/\r/g, "")
           .split(/\r?\n/)
           .filter((line) => line.trim().length > 0);
 
@@ -165,7 +321,10 @@ const StationDetailsScreen = ({ route, navigation }) => {
       </Surface>
 
       <Surface style={styles.infoContainer}>
-        <Title style={styles.title}>{station.name}</Title>
+        <View style={styles.titleRow}>
+          <Title style={styles.title}>{station.name}</Title>
+          {openStatusBadge()}
+        </View>
         <View style={styles.addressContainer}>
           <MaterialIcons name="location-on" size={20} color="#666" />
           <Paragraph style={styles.address}>
@@ -274,9 +433,32 @@ const styles = StyleSheet.create({
     elevation: 2,
     backgroundColor: '#fff'
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   title: {
     fontSize: 22,
     marginBottom: 8,
+    flexShrink: 1,
+    marginRight: 12,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusOpen: {
+    backgroundColor: '#e8f5e9',
+  },
+  statusClosed: {
+    backgroundColor: '#ffebee',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#333',
   },
   addressContainer: {
     flexDirection: "row",
