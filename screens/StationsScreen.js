@@ -23,6 +23,7 @@ import { db } from "../utils/firebase";
 import { useFocusEffect } from "@react-navigation/native";
 import { addToFavorites, removeFromFavorites, getFavoriteIds } from "../utils/favorites";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import StatusBadge from "../components/StatusBadge";
 
 const initialLayout = { width: Dimensions.get("window").width };
 
@@ -342,6 +343,13 @@ const StationListScreen = ({
   const renderItem = useCallback(({ item }) => {
     // FIX: Use item.pk to check if the station is favorited
     const isFavorited = favoriteStationIds.has(item.pk);
+    const openState = isStationOpen(item);
+    const statusKey = openState === true ? "open" : openState === false ? "closed" : "unknown";
+    const statusLabel = openState === true
+      ? t("petrolStations.open")
+      : openState === false
+        ? t("petrolStations.closed")
+        : t("petrolStations.unknown");
     return (
       <TouchableOpacity
         style={styles.stationItem}
@@ -352,6 +360,7 @@ const StationListScreen = ({
             <Text style={styles.stationName}>{item.name}</Text>
             <Text style={styles.stationAddress}>{item.address}</Text>
           </View>
+          <StatusBadge label={statusLabel} status={statusKey} style={{ marginHorizontal: 8, alignSelf: 'center' }} />
           <TouchableOpacity
             style={styles.favoriteButton}
             // FIX: Pass item.pk to the toggle function
