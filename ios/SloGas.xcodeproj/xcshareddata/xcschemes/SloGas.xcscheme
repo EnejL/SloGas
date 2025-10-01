@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "DriveTrackPro.app"
-               BlueprintName = "DriveTrackPro"
-               ReferencedContainer = "container:DriveTrackPro.xcodeproj">
+               BuildableName = "SloGas.app"
+               BlueprintName = "SloGas"
+               ReferencedContainer = "container:SloGas.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "DriveTrackProTests.xctest"
-               BlueprintName = "DriveTrackProTests"
-               ReferencedContainer = "container:DriveTrackPro.xcodeproj">
+               BuildableName = "SloGasTests.xctest"
+               BlueprintName = "SloGasTests"
+               ReferencedContainer = "container:SloGas.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "DriveTrackPro.app"
-            BlueprintName = "DriveTrackPro"
-            ReferencedContainer = "container:DriveTrackPro.xcodeproj">
+            BuildableName = "SloGas.app"
+            BlueprintName = "SloGas"
+            ReferencedContainer = "container:SloGas.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "DriveTrackPro.app"
-            BlueprintName = "DriveTrackPro"
-            ReferencedContainer = "container:DriveTrackPro.xcodeproj">
+            BuildableName = "SloGas.app"
+            BlueprintName = "SloGas"
+            ReferencedContainer = "container:SloGas.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
