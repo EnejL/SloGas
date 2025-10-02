@@ -2,7 +2,7 @@ export default {
   "expo": {
     "name": "SloGas",
     "slug": "slogas",
-    "version": "1.5.1", 
+    "version": "0.5.0", 
     "orientation": "portrait",
     "icon": "./assets/app-icon-ios.png",
     "userInterfaceStyle": "light",
@@ -10,17 +10,22 @@ export default {
     "scheme": "com.enejlicina.slogas",
     "ios": {
       "supportsTablet": true,
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.enejlicina.slogas"]
+      },
       "bundleIdentifier": "com.enejlicina.slogas",
+      "appleTeamId": "433786BYGK",
       "deploymentTarget": "15.1",
       "associatedDomains": ["applinks:verify.enejlicina.com"],
-      "buildNumber": "17",
+      "buildNumber": "1",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
       "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
         "googleMapsApiKey": "AIzaSyCB7pakhzxdYuzfvZbMrcHJ7jcuZmVFprA"
-      }
+      },
+      "associatedAppGroup": "group.com.enejlicina.slogas"
     },
     "android": {
       "package": "com.enejlicina.slogas",
@@ -71,6 +76,21 @@ export default {
           "android": {
             "minSdkVersion": 24
           }
+        }
+      ],
+      [
+        "@bacons/apple-targets",
+        {
+          "appleTeamId": "433786BYGK",
+          "targets": [
+            {
+              "type": "widget",
+              "name": "SloGasWidget",
+              "bundleIdentifier": "com.enejlicina.slogas.SloGasWidget",
+              "deploymentTarget": "14.0",
+              "icon": "./assets/app-icon-ios.png"
+            }
+          ]
         }
       ]
     ],

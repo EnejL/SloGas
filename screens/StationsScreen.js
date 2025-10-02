@@ -24,40 +24,80 @@ import { useFocusEffect } from "@react-navigation/native";
 import { addToFavorites, removeFromFavorites, getFavoriteIds } from "../utils/favorites";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import StatusBadge from "../components/StatusBadge";
+// WIDGET: Import the ExtensionStorage helper
+import { ExtensionStorage } from '@bacons/apple-targets';
 
 const initialLayout = { width: Dimensions.get("window").width };
+
+// Create a storage object with the App Group.
+const widgetStorage = new ExtensionStorage("group.com.enejlicina.slogas");
+
+// WIDGET: Helper function to calculate distance between two coordinates (Haversine formula)
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+};
+
+// WIDGET: Function to send data to the home screen widget
+const updateWidgetData = async (station) => {
+  console.log('--- WIDGET DEBUG: Attempting to update widget data ---');
+  if (!station) {
+    console.log('WIDGET DEBUG: No station provided, aborting.');
+    return;
+  };
+
+  const widgetData = {
+    name: station.name,
+    address: station.address,
+  };
+  
+  try {
+    console.log('WIDGET DEBUG: Data to be sent:', widgetData);
+    
+    // Use the INSTANCE to set the data
+    widgetStorage.set('station_data', JSON.stringify(widgetData));
+    console.log('WIDGET DEBUG: setItem successful.');
+    
+    // Use the STATIC CLASS to reload the widget
+    ExtensionStorage.reloadWidget();
+    console.log('WIDGET DEBUG: reloadWidget called successfully.');
+
+  } catch (error) {
+    console.error('WIDGET DEBUG: Failed to update widget data:', error);
+  }
+};
+
 
 const isStationOpen = (station) => {
   const openingHours = station.opening_hours || station.open_hours;
   
-  // Handle special cases
   if (openingHours === "24/7") return true;
   if (openingHours === "closed") return false;
-  if (!openingHours) return null; // Unknown
+  if (!openingHours) return null;
   
-  // Handle structured array format
   if (Array.isArray(openingHours)) {
     const now = new Date();
-    const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const currentMonth = now.getMonth() + 1; // 1-12
-    const currentTime = now.getHours() * 60 + now.getMinutes(); // Minutes since midnight
+    const currentDay = now.getDay();
+    const currentMonth = now.getMonth() + 1;
+    const currentTime = now.getHours() * 60 + now.getMinutes();
     
-    // Map JS day numbers to our day codes
     const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
     const todayCode = dayMap[currentDay];
     
-    // Filter schedules relevant to today
     const relevantSchedules = openingHours.filter(schedule => {
-      // Check if this schedule applies to current month (if months specified)
       if (schedule.months && schedule.months.length > 0) {
         if (!schedule.months.includes(currentMonth)) return false;
       }
-      
-      // Check if this schedule applies to today
       return schedule.days.includes(todayCode);
     });
     
-    // Check if any relevant schedule covers the current time
     for (const schedule of relevantSchedules) {
       for (const timeSlot of schedule.times) {
         const [fromHour, fromMin] = timeSlot.from.split(':').map(Number);
@@ -72,10 +112,10 @@ const isStationOpen = (station) => {
       }
     }
     
-    return false; // No matching schedule found
+    return false;
   }
   
-  return null; // Unknown format
+  return null;
 };
 
 const fetchPetrolStations = async () => {
@@ -114,6 +154,8 @@ const StationsScreen = ({ navigation }) => {
   const [error, setError] = useState(null);
   const [favoriteStationIds, setFavoriteStationIds] = useState(new Set());
   const [index, setIndex] = useState(0);
+  // WIDGET: Keep a reference to the user's location to use for the widget
+  const userLocationRef = useRef(null);
   const [routes, setRoutes] = useState([
     { key: 'map', title: t('petrolStations.map') },
     { key: 'list', title: t('petrolStations.list') },
@@ -128,7 +170,6 @@ const StationsScreen = ({ navigation }) => {
     ]);
   }, [t]);
 
-  // Add a settings icon to the header
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -151,10 +192,34 @@ const StationsScreen = ({ navigation }) => {
       }
   }, []);
   
-  // Initial load of favorites
   useEffect(() => {
     fetchFavoriteIds();
   }, [fetchFavoriteIds]);
+
+  // WIDGET: Function to find the nearest station and update the widget
+  const findAndUpdateNearestStation = (stationList) => {
+    if (userLocationRef.current && stationList.length > 0) {
+      let closestStation = null;
+      let minDistance = Infinity;
+
+      stationList.forEach(station => {
+        const distance = getDistance(
+          userLocationRef.current.latitude,
+          userLocationRef.current.longitude,
+          station.lat,
+          station.lng
+        );
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestStation = station;
+        }
+      });
+      
+      if (closestStation) {
+        updateWidgetData(closestStation);
+      }
+    }
+  };
 
   const loadStations = useCallback(async () => {
     setLoading(true);
@@ -163,7 +228,9 @@ const StationsScreen = ({ navigation }) => {
       const data = await fetchPetrolStations();
       setStations(data);
       
-      // Log open/closed statistics
+      // WIDGET: After fetching stations, find the nearest one and update the widget
+      findAndUpdateNearestStation(data);
+      
       const now = new Date();
       const openStations = [];
       const closedStations = [];
@@ -189,7 +256,6 @@ const StationsScreen = ({ navigation }) => {
       console.log('📊 TOTAL:       ', data.length, 'stations');
       console.log('═'.repeat(60));
       
-      // Show breakdown by status
       const openPercentage = ((openStations.length / data.length) * 100).toFixed(1);
       const closedPercentage = ((closedStations.length / data.length) * 100).toFixed(1);
       console.log(`Open: ${openPercentage}% | Closed: ${closedPercentage}%`);
@@ -209,7 +275,7 @@ const StationsScreen = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchFavoriteIds(); // Re-fetch favorites when screen is focused
+      fetchFavoriteIds();
     }, [fetchFavoriteIds])
   );
   
@@ -227,6 +293,10 @@ const StationsScreen = ({ navigation }) => {
             loading={loading}
             error={error}
             navigation={navigation}
+            // WIDGET: Pass userLocationRef to the map screen
+            userLocationRef={userLocationRef}
+            // WIDGET: Pass the update function so it can be called when location is found
+            onLocationUpdate={() => findAndUpdateNearestStation(stations)}
           />
         );
       case 'list':
@@ -295,6 +365,7 @@ const StationsScreen = ({ navigation }) => {
   );
 };
 
+// ... (StationListScreen remains unchanged) ...
 const StationListScreen = ({ 
   stations,
   loading, 
@@ -356,7 +427,6 @@ const StationListScreen = ({
   }, [favoriteStationIds, onFavoritesChange, t]);
 
   const renderItem = useCallback(({ item }) => {
-    // FIX: Use item.pk to check if the station is favorited
     const isFavorited = favoriteStationIds.has(item.pk);
     const openState = isStationOpen(item);
     const statusKey = openState === true ? "open" : openState === false ? "closed" : "unknown";
@@ -378,7 +448,6 @@ const StationListScreen = ({
           <StatusBadge label={statusLabel} status={statusKey} style={{ marginHorizontal: 8, alignSelf: 'center' }} />
           <TouchableOpacity
             style={styles.favoriteButton}
-            // FIX: Pass item.pk to the toggle function
             onPress={() => toggleFavorite(item.pk)}
           >
             <MaterialCommunityIcons
@@ -432,7 +501,6 @@ const StationListScreen = ({
       ) : (
         <FlatList
           data={filteredStations}
-          // FIX: Use item.pk for the key, as it's the unique identifier
           keyExtractor={(item) => item.pk.toString()}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
@@ -450,11 +518,13 @@ const StationListScreen = ({
   );
 };
 
-const StationMapScreen = ({ stations, loading, error, navigation }) => {
+
+// WIDGET: Update StationMapScreen to accept the new props
+const StationMapScreen = ({ stations, loading, error, navigation, userLocationRef, onLocationUpdate }) => {
   const { t } = useTranslation();
   const mapRef = useRef(null);
   const [region, setRegion] = useState({
-    latitude: 46.119944, // Center of Slovenia
+    latitude: 46.119944,
     longitude: 14.815333,
     latitudeDelta: 1.5,
     longitudeDelta: 1.5,
@@ -466,6 +536,8 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Location permission denied");
+        // WIDGET: Even if denied, call the update function so it can potentially use a default location or last known location
+        onLocationUpdate();
         return;
       }
       const location = await Location.getCurrentPositionAsync({});
@@ -474,7 +546,9 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
         longitude: location.coords.longitude,
       };
       setUserLocation(userCoords);
-      // Animate to user's location only on first load
+      // WIDGET: Update the shared ref with the user's location
+      userLocationRef.current = userCoords;
+      
       if (mapRef.current) {
          mapRef.current.animateToRegion({
             ...userCoords,
@@ -482,10 +556,12 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
             longitudeDelta: 0.05,
           }, 1000);
       }
+      // WIDGET: Trigger the widget update now that we have location
+      onLocationUpdate();
     } catch (error) {
       console.error("Error getting location:", error);
     }
-  }, []);
+  }, [onLocationUpdate, userLocationRef]);
 
   useEffect(() => {
     getUserLocation();
@@ -557,7 +633,6 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
         initialRegion={region}
         onRegionChangeComplete={setRegion}
         showsUserLocation={true}
-        // clusterColor="#2e7d32"
         clusterColor="blue"
         clusterTextColor="#fff"
       >
@@ -566,7 +641,6 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
             key={station.pk}
             coordinate={{ latitude: station.lat, longitude: station.lng }}
             tracksViewChanges={false}
-            // onPress={() => onMarkerPress(station)}
           >
             {(() => {
               const isOpen = isStationOpen(station);

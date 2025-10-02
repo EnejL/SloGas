@@ -87,13 +87,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.enejlicina.drivetrackpro'
+    namespace 'com.enejlicina.slogas'
     defaultConfig {
-        applicationId 'com.enejlicina.drivetrackpro'
+        applicationId 'com.enejlicina.slogas'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2
-        versionName "1.5.1"
+        versionName "0.5.0"
     }
     signingConfigs {
         debug {
