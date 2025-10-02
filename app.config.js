@@ -2,7 +2,7 @@ export default {
   "expo": {
     "name": "SloGas",
     "slug": "slogas",
-    "version": "1.5.1", 
+    "version": "1.0.0", 
     "orientation": "portrait",
     "icon": "./assets/app-icon-ios.png",
     "userInterfaceStyle": "light",
@@ -13,7 +13,7 @@ export default {
       "bundleIdentifier": "com.enejlicina.slogas",
       "deploymentTarget": "15.1",
       "associatedDomains": ["applinks:verify.enejlicina.com"],
-      "buildNumber": "17",
+      "buildNumber": "1",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -76,7 +76,7 @@ export default {
     ],
     "extra": {
       "eas": {
-        "projectId": "9049abbc-1ba0-443b-aa02-c71be3a3d337"
+        "projectId": "17569bb2-a2e9-4fce-9fff-5ac600d12118"
       }
     }
   }
