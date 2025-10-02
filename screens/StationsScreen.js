@@ -134,9 +134,9 @@ const StationsScreen = ({ navigation }) => {
       headerRight: () => (
         <TouchableOpacity
           onPress={() => navigation.navigate('Settings')}
-          style={{ marginRight: 15 }}
+          style={{ padding: 8 }}
         >
-          <MaterialIcons name="settings" size={24} color="black" />
+          <MaterialIcons name="settings" size={22} color="black" />
         </TouchableOpacity>
       ),
     });
