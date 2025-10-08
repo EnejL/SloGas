@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -6,6 +6,8 @@ import {
   Text,
   Linking,
   Platform,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Surface, Title, Paragraph, Divider, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
@@ -13,15 +15,47 @@ import { MaterialIcons } from "@expo/vector-icons";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import StatusBadge from "../components/StatusBadge";
 import { formatPrice } from "../utils/i18n";
+import { addToFavorites, removeFromFavorites, getFavoriteIds } from "../utils/favorites";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const StationDetailsScreen = ({ route, navigation }) => {
   const { station } = route.params;
   const { t } = useTranslation();
+  const [isFavorited, setIsFavorited] = useState(false);
 
   // Set the header title to the station name
   useEffect(() => {
     navigation.setOptions({ title: station.name });
   }, [navigation, station]);
+
+  // Check if station is favorited on component mount
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      try {
+        const favoriteIds = await getFavoriteIds();
+        setIsFavorited(favoriteIds.has(station.pk.toString()));
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+    checkFavoriteStatus();
+  }, [station.pk]);
+
+  // Toggle favorite status
+  const toggleFavorite = useCallback(async () => {
+    try {
+      if (isFavorited) {
+        await removeFromFavorites(station.pk.toString());
+        setIsFavorited(false);
+      } else {
+        await addToFavorites(station.pk.toString());
+        setIsFavorited(true);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      Alert.alert(t("common.error"), t("common.error.favorite") || "Failed to update favorites");
+    }
+  }, [isFavorited, station.pk, t]);
 
   // Function to get banner color based on fuel type
   const getFuelBannerColor = (fuelKey) => {
@@ -363,7 +397,19 @@ const StationDetailsScreen = ({ route, navigation }) => {
       <Surface style={styles.infoContainer}>
         <View style={styles.titleRow}>
           <Title style={styles.title}>{station.name}</Title>
-          <StatusBadge label={statusLabel} status={statusKey} />
+          <View style={styles.titleActions}>
+            <StatusBadge label={statusLabel} status={statusKey} />
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              onPress={toggleFavorite}
+            >
+              <MaterialCommunityIcons
+                name={isFavorited ? "heart" : "heart-outline"}
+                size={24}
+                color={isFavorited ? "#ff4081" : "#666"}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.addressContainer}>
           <MaterialIcons name="location-on" size={20} color="#666" />
@@ -515,6 +561,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     flexShrink: 1,
     marginRight: 12,
+  },
+  titleActions: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+  },
+  favoriteButton: {
+    padding: 8,
   },
   statusBadge: {
     paddingHorizontal: 10,
