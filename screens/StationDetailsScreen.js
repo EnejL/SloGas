@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { MaterialIcons } from "@expo/vector-icons";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import StatusBadge from "../components/StatusBadge";
+import { formatPrice } from "../utils/i18n";
 
 const StationDetailsScreen = ({ route, navigation }) => {
   const { station } = route.params;
@@ -426,7 +427,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
                 return sorted.map(([fuelKey, value]) => (
                   <View key={fuelKey} style={styles.priceCard}>
                     <Text style={styles.fuelType}>{toLabel(fuelKey)}</Text>
-                    <Text style={styles.priceValue}>{value} €</Text>
+                    <Text style={styles.priceValue}>{formatPrice(value)}</Text>
                   </View>
                 ));
               })()}

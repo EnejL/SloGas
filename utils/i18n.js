@@ -74,4 +74,54 @@ const initI18n = async () => {
 // Initialize immediately
 initI18n();
 
+// Price formatting utility with locale-specific decimal separators
+export const formatPrice = (price, language = null) => {
+  // Get current language if not provided
+  const currentLanguage = language || getCurrentLanguage();
+  
+  // Handle invalid or missing prices
+  if (price === null || price === undefined || price === '') {
+    return 'N/A';
+  }
+  
+  // Convert to number if it's a string
+  const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+  
+  // Handle invalid numbers
+  if (isNaN(numericPrice)) {
+    return 'N/A';
+  }
+  
+  // Format based on language
+  // English uses period as decimal separator (1.45 €)
+  // All other languages use comma as decimal separator (1,45 €)
+  if (currentLanguage === 'en') {
+    return `${numericPrice.toFixed(2)} €`;
+  } else {
+    // For all other languages (sl, it, de, hr), use comma as decimal separator
+    return `${numericPrice.toFixed(2).replace('.', ',')} €`;
+  }
+};
+
+// Alternative formatting function for prices without currency symbol
+export const formatPriceNumber = (price, language = null) => {
+  const currentLanguage = language || getCurrentLanguage();
+  
+  if (price === null || price === undefined || price === '') {
+    return 'N/A';
+  }
+  
+  const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+  
+  if (isNaN(numericPrice)) {
+    return 'N/A';
+  }
+  
+  if (currentLanguage === 'en') {
+    return numericPrice.toFixed(2);
+  } else {
+    return numericPrice.toFixed(2).replace('.', ',');
+  }
+};
+
 export default i18n;
