@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { Surface, Title, Paragraph, Divider, Button } from "react-native-paper";
+import { Surface, Divider, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { MaterialIcons } from "@expo/vector-icons";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
@@ -396,7 +396,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
 
       <Surface style={styles.infoContainer}>
         <View style={styles.titleRow}>
-          <Title style={styles.title}>{station.name}</Title>
+          <Text style={styles.title}>{station.name}</Text>
           <View style={styles.titleActions}>
             <StatusBadge label={statusLabel} status={statusKey} />
             <TouchableOpacity
@@ -413,18 +413,18 @@ const StationDetailsScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.addressContainer}>
           <MaterialIcons name="location-on" size={20} color="#666" />
-          <Paragraph style={styles.address}>
+          <Text style={styles.address}>
             {station.address}{station.zip_code && `, ${station.zip_code}`}
-          </Paragraph>
+          </Text>
         </View>
 
         <Divider style={styles.divider} />
 
         {hasOpeningHours ? (
           <>
-            <Title style={styles.sectionTitle}>
+            <Text style={styles.sectionTitle}>
               {t("petrolStations.openingHours")}
-            </Title>
+            </Text>
             {isOpen24Hours ? (
               <View style={styles.open24Container}>
                 <MaterialIcons name="access-time" size={20} color="#2e7d32" />
@@ -439,9 +439,9 @@ const StationDetailsScreen = ({ route, navigation }) => {
           </>
         ) : (
           <>
-            <Title style={styles.sectionTitle}>
+            <Text style={styles.sectionTitle}>
               {t("petrolStations.openingHours")}
-            </Title>
+            </Text>
             <View style={styles.hoursContainer}>
               <Text style={styles.hourText}>
                 {t("petrolStations.noOpeningHours")}
@@ -453,7 +453,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
 
         {station.prices && Object.keys(station.prices).length > 0 && (
           <>
-            <Title style={styles.sectionTitle}>{t("petrolStations.prices")}</Title>
+            <Text style={styles.sectionTitle}>{t("petrolStations.prices")}</Text>
             <View style={styles.pricesContainer}>
               {(() => {
                 const prices = station.prices || {};
@@ -558,6 +558,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 8,
     flexShrink: 1,
     marginRight: 12,
@@ -600,6 +601,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
+    fontWeight: "bold",
     marginBottom: 16,
   },
   pricesContainer: {

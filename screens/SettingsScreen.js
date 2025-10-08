@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Divider, Title } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import { saveLanguage } from '../utils/i18n';
 
 const SettingsScreen = ({ navigation }) => {
@@ -23,7 +23,7 @@ const SettingsScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Title style={styles.title}>{t('settings.language')}</Title>
+      <Text style={styles.title}>{t('settings.language')}</Text>
       {languages.map(lang => (
         <TouchableOpacity key={lang.code} style={styles.item} onPress={() => changeLanguage(lang.code)}>
             <Text style={styles.itemText}>{lang.flag} {lang.name}</Text>
@@ -42,9 +42,9 @@ const SettingsScreen = ({ navigation }) => {
         <Text style={styles.itemText}>{t('settings.termsOfUse')}</Text>
       </TouchableOpacity>
 
-      <View style={styles.footer}>
+      {/* <View style={styles.footer}>
         <Text style={styles.footerText}>Made by Enej</Text>
-      </View>
+      </View> */}
     </ScrollView>
   );
 };
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
+    fontWeight: 'bold',
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 10,
