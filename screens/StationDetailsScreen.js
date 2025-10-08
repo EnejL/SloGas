@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -6,21 +6,84 @@ import {
   Text,
   Linking,
   Platform,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
-import { Surface, Title, Paragraph, Divider, Button } from "react-native-paper";
+import { Surface, Divider, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { MaterialIcons } from "@expo/vector-icons";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import StatusBadge from "../components/StatusBadge";
+import { formatPrice } from "../utils/i18n";
+import { addToFavorites, removeFromFavorites, getFavoriteIds } from "../utils/favorites";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const StationDetailsScreen = ({ route, navigation }) => {
   const { station } = route.params;
   const { t } = useTranslation();
+  const [isFavorited, setIsFavorited] = useState(false);
 
   // Set the header title to the station name
   useEffect(() => {
     navigation.setOptions({ title: station.name });
   }, [navigation, station]);
+
+  // Check if station is favorited on component mount
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      try {
+        const favoriteIds = await getFavoriteIds();
+        setIsFavorited(favoriteIds.has(station.pk.toString()));
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+    checkFavoriteStatus();
+  }, [station.pk]);
+
+  // Toggle favorite status
+  const toggleFavorite = useCallback(async () => {
+    try {
+      if (isFavorited) {
+        await removeFromFavorites(station.pk.toString());
+        setIsFavorited(false);
+      } else {
+        await addToFavorites(station.pk.toString());
+        setIsFavorited(true);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      Alert.alert(t("common.error"), t("common.error.favorite") || "Failed to update favorites");
+    }
+  }, [isFavorited, station.pk, t]);
+
+  // Function to get banner color based on fuel type
+  const getFuelBannerColor = (fuelKey) => {
+    const key = fuelKey.toLowerCase();
+    
+    // Diesel fuels - black
+    if (key === 'dizel' || key === 'dizel-premium') {
+      return '#000000';
+    }
+    
+    // 95 and 100 octane petrol - green
+    if (key === '95' || key === '100') {
+      return '#29A056';
+    }
+    
+    // Kurilno olje (heating oil) - dark blue
+    if (key === 'koel') {
+      return '#0B4665';
+    }
+    
+    // LPG - blue
+    if (key === 'lpg' || key === 'avtoplin-lpg') {
+      return '#0085D6';
+    }
+    
+    // Default color for other fuels (98, CNG, LNG, HVO)
+    return '#666666';
+  };
 
   // Determine if the station is open "right now"
   const isStationOpenNow = () => {
@@ -333,23 +396,35 @@ const StationDetailsScreen = ({ route, navigation }) => {
 
       <Surface style={styles.infoContainer}>
         <View style={styles.titleRow}>
-          <Title style={styles.title}>{station.name}</Title>
-          <StatusBadge label={statusLabel} status={statusKey} />
+          <Text style={styles.title}>{station.name}</Text>
+          <View style={styles.titleActions}>
+            <StatusBadge label={statusLabel} status={statusKey} />
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              onPress={toggleFavorite}
+            >
+              <MaterialCommunityIcons
+                name={isFavorited ? "heart" : "heart-outline"}
+                size={24}
+                color={isFavorited ? "#ff4081" : "#666"}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.addressContainer}>
           <MaterialIcons name="location-on" size={20} color="#666" />
-          <Paragraph style={styles.address}>
+          <Text style={styles.address}>
             {station.address}{station.zip_code && `, ${station.zip_code}`}
-          </Paragraph>
+          </Text>
         </View>
 
         <Divider style={styles.divider} />
 
         {hasOpeningHours ? (
           <>
-            <Title style={styles.sectionTitle}>
+            <Text style={styles.sectionTitle}>
               {t("petrolStations.openingHours")}
-            </Title>
+            </Text>
             {isOpen24Hours ? (
               <View style={styles.open24Container}>
                 <MaterialIcons name="access-time" size={20} color="#2e7d32" />
@@ -364,9 +439,9 @@ const StationDetailsScreen = ({ route, navigation }) => {
           </>
         ) : (
           <>
-            <Title style={styles.sectionTitle}>
+            <Text style={styles.sectionTitle}>
               {t("petrolStations.openingHours")}
-            </Title>
+            </Text>
             <View style={styles.hoursContainer}>
               <Text style={styles.hourText}>
                 {t("petrolStations.noOpeningHours")}
@@ -378,7 +453,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
 
         {station.prices && Object.keys(station.prices).length > 0 && (
           <>
-            <Title style={styles.sectionTitle}>{t("petrolStations.prices")}</Title>
+            <Text style={styles.sectionTitle}>{t("petrolStations.prices")}</Text>
             <View style={styles.pricesContainer}>
               {(() => {
                 const prices = station.prices || {};
@@ -426,7 +501,13 @@ const StationDetailsScreen = ({ route, navigation }) => {
                 return sorted.map(([fuelKey, value]) => (
                   <View key={fuelKey} style={styles.priceCard}>
                     <Text style={styles.fuelType}>{toLabel(fuelKey)}</Text>
-                    <Text style={styles.priceValue}>{value} €</Text>
+                    <Text style={styles.priceValue}>{formatPrice(value)}</Text>
+                    <View 
+                      style={[
+                        styles.priceBanner, 
+                        { backgroundColor: getFuelBannerColor(fuelKey) }
+                      ]} 
+                    />
                   </View>
                 ));
               })()}
@@ -477,9 +558,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 8,
     flexShrink: 1,
     marginRight: 12,
+  },
+  titleActions: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+  },
+  favoriteButton: {
+    padding: 8,
   },
   statusBadge: {
     paddingHorizontal: 10,
@@ -511,6 +601,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
+    fontWeight: "bold",
     marginBottom: 16,
   },
   pricesContainer: {
@@ -526,6 +617,17 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     alignItems: "center",
+    overflow: "hidden", // Ensure banner doesn't overflow rounded corners
+    position: "relative",
+  },
+  priceBanner: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 8,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   fuelType: {
     fontSize: 16,
