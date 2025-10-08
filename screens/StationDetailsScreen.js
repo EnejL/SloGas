@@ -23,6 +23,34 @@ const StationDetailsScreen = ({ route, navigation }) => {
     navigation.setOptions({ title: station.name });
   }, [navigation, station]);
 
+  // Function to get banner color based on fuel type
+  const getFuelBannerColor = (fuelKey) => {
+    const key = fuelKey.toLowerCase();
+    
+    // Diesel fuels - black
+    if (key === 'dizel' || key === 'dizel-premium') {
+      return '#000000';
+    }
+    
+    // 95 and 100 octane petrol - green
+    if (key === '95' || key === '100') {
+      return '#29A056';
+    }
+    
+    // Kurilno olje (heating oil) - dark blue
+    if (key === 'koel') {
+      return '#0B4665';
+    }
+    
+    // LPG - blue
+    if (key === 'lpg' || key === 'avtoplin-lpg') {
+      return '#0085D6';
+    }
+    
+    // Default color for other fuels (98, CNG, LNG, HVO)
+    return '#666666';
+  };
+
   // Determine if the station is open "right now"
   const isStationOpenNow = () => {
     const openingHours = station.opening_hours || station.open_hours;
@@ -428,6 +456,12 @@ const StationDetailsScreen = ({ route, navigation }) => {
                   <View key={fuelKey} style={styles.priceCard}>
                     <Text style={styles.fuelType}>{toLabel(fuelKey)}</Text>
                     <Text style={styles.priceValue}>{formatPrice(value)}</Text>
+                    <View 
+                      style={[
+                        styles.priceBanner, 
+                        { backgroundColor: getFuelBannerColor(fuelKey) }
+                      ]} 
+                    />
                   </View>
                 ));
               })()}
@@ -527,6 +561,17 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     alignItems: "center",
+    overflow: "hidden", // Ensure banner doesn't overflow rounded corners
+    position: "relative",
+  },
+  priceBanner: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 8,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   fuelType: {
     fontSize: 16,
