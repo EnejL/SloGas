@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -6,20 +6,161 @@ import {
   Text,
   Linking,
   Platform,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
-import { Surface, Title, Paragraph, Divider, Button } from "react-native-paper";
+import { Surface, Divider, Button } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { MaterialIcons } from "@expo/vector-icons";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import StatusBadge from "../components/StatusBadge";
+import { formatPrice } from "../utils/i18n";
+import { addToFavorites, removeFromFavorites, getFavoriteIds } from "../utils/favorites";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useFocusEffect } from "@react-navigation/native";
 
 const StationDetailsScreen = ({ route, navigation }) => {
   const { station } = route.params;
   const { t } = useTranslation();
+  const [isFavorited, setIsFavorited] = useState(false);
 
   // Set the header title to the station name
   useEffect(() => {
     navigation.setOptions({ title: station.name });
   }, [navigation, station]);
+
+  // Function to check favorite status
+  const checkFavoriteStatus = useCallback(async () => {
+    try {
+      const favoriteIds = await getFavoriteIds();
+      setIsFavorited(favoriteIds.has(station.pk));
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+    }
+  }, [station.pk]);
+
+  // Check if station is favorited on component mount
+  useEffect(() => {
+    checkFavoriteStatus();
+  }, [checkFavoriteStatus]);
+
+  // Refresh favorite status when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      checkFavoriteStatus();
+    }, [checkFavoriteStatus])
+  );
+
+  // Toggle favorite status
+  const toggleFavorite = useCallback(async () => {
+    try {
+      if (isFavorited) {
+        await removeFromFavorites(station.pk);
+        setIsFavorited(false);
+      } else {
+        await addToFavorites(station.pk);
+        setIsFavorited(true);
+      }
+      // Refresh the favorite status to ensure consistency
+      await checkFavoriteStatus();
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      Alert.alert(t("common.error"), t("common.error.favorite") || "Failed to update favorites");
+    }
+  }, [isFavorited, station.pk, t, checkFavoriteStatus]);
+
+  // Function to get banner color based on fuel type
+  const getFuelBannerColor = (fuelKey) => {
+    const key = fuelKey.toLowerCase();
+    
+    // Diesel fuels - black
+    if (key === 'dizel' || key === 'dizel-premium') {
+      return '#000000';
+    }
+    
+    // 95 and 100 octane petrol - green
+    if (key === '95' || key === '100') {
+      return '#29A056';
+    }
+    
+    // Kurilno olje (heating oil) - dark blue
+    if (key === 'koel') {
+      return '#0B4665';
+    }
+    
+    // LPG - blue
+    if (key === 'lpg' || key === 'avtoplin-lpg') {
+      return '#0085D6';
+    }
+    
+    // Default color for other fuels (98, CNG, LNG, HVO)
+    return '#666666';
+  };
+
+  // Determine if the station is open "right now"
+  const isStationOpenNow = () => {
+    const openingHours = station.opening_hours || station.open_hours;
+
+    if (openingHours === "24/7") return true;
+    if (openingHours === "closed") return false;
+    if (!openingHours) return null;
+
+    if (Array.isArray(openingHours)) {
+      const now = new Date();
+      const currentDay = now.getDay();
+      const currentMonth = now.getMonth() + 1;
+      const currentTime = now.getHours() * 60 + now.getMinutes();
+
+      const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+      const todayCode = dayMap[currentDay];
+
+      const relevantSchedules = openingHours.filter(schedule => {
+        if (schedule.months && schedule.months.length > 0) {
+          if (!schedule.months.includes(currentMonth)) return false;
+        }
+        return schedule.days.includes(todayCode);
+      });
+
+      for (const schedule of relevantSchedules) {
+        for (const timeSlot of schedule.times) {
+          const [fromHour, fromMin] = timeSlot.from.split(':').map(Number);
+          const [toHour, toMin] = timeSlot.to.split(':').map(Number);
+          const fromTime = fromHour * 60 + fromMin;
+          const toTime = toHour * 60 + toMin;
+          if (currentTime >= fromTime && currentTime <= toTime) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    return null;
+  };
+
+  const openStatus = isStationOpenNow();
+  const statusKey = openStatus === true ? "open" : openStatus === false ? "closed" : "unknown";
+  const statusLabel = openStatus === true
+    ? t("petrolStations.open")
+    : openStatus === false
+      ? t("petrolStations.closed")
+      : t("petrolStations.unknown");
+
+  useEffect(() => {
+    try {
+      const prices = station && station.prices ? station.prices : {};
+      const entries = Object.entries(prices || {});
+      if (entries.length === 0) {
+        console.log('No prices available for this station.');
+      } else {
+        entries.forEach(([fuelKey, value]) => {
+          console.log(`  ${fuelKey}: ${value}`);
+        });
+      }
+    } catch (e) {
+      console.log('Error logging station prices:', e?.message || e);
+    }
+  }, [station]);
 
   const openMapsApp = () => {
     const scheme = Platform.select({
@@ -38,13 +179,162 @@ const StationDetailsScreen = ({ route, navigation }) => {
   };
 
   const formatOpeningHours = () => {
-    const openingHoursText = station.opening_hours || station.open_hours;
-    if (!openingHoursText) return null;
+    const openingHoursData = station.opening_hours || station.open_hours;
+    if (!openingHoursData) return null;
 
     try {
-      if (typeof openingHoursText === "string") {
-        const lines = openingHoursText
-          .replace(/\\r/g, "")
+      // Handle special cases
+      if (openingHoursData === "24/7") {
+        return (
+          <View style={styles.open24Container}>
+            <MaterialIcons name="access-time" size={20} color="#2e7d32" />
+            <Text style={styles.open24Text}>
+              {t("petrolStations.open24Hours")}
+            </Text>
+          </View>
+        );
+      }
+
+      if (openingHoursData === "closed") {
+        return (
+          <View style={styles.hoursContainer}>
+            <Text style={styles.hourText}>{t("petrolStations.closed")}</Text>
+          </View>
+        );
+      }
+
+      // Handle structured array format
+      if (Array.isArray(openingHoursData)) {
+        const dayNames = {
+          mon: t("days.monday"),
+          tue: t("days.tuesday"),
+          wed: t("days.wednesday"),
+          thu: t("days.thursday"),
+          fri: t("days.friday"),
+          sat: t("days.saturday"),
+          sun: t("days.sunday"),
+          holiday: t("days.holiday"),
+        };
+
+        const dayOrder = ["mon", "tue", "wed", "thu", "fri", "sat", "sun", "holiday"];
+
+        // Get current month (1-12)
+        const currentMonth = new Date().getMonth() + 1;
+
+        // Check if schedule has months (seasonal hours)
+        const hasMonths = openingHoursData.some(schedule => schedule.months && schedule.months.length > 0);
+
+        // Filter schedules to show only current month's data
+        let relevantSchedules = openingHoursData;
+        if (hasMonths) {
+          relevantSchedules = openingHoursData.filter(schedule => {
+            // If no months specified, it applies to all months
+            if (!schedule.months || schedule.months.length === 0) return true;
+            // Otherwise, check if current month is in the schedule
+            return schedule.months.includes(currentMonth);
+          });
+        }
+
+        // Deduplicate overlapping schedules with different times
+        // If we have multiple schedules with all days but different times, 
+        // we need to figure out which days actually belong to which times
+        let processedSchedules = relevantSchedules;
+        
+        // Check if we have duplicate "all days" entries
+        const allDaySchedules = relevantSchedules.filter(s => s.days.length === 7);
+        if (allDaySchedules.length > 1) {
+          // Sort by time (earlier times first)
+          allDaySchedules.sort((a, b) => {
+            const timeA = a.times[0].from;
+            const timeB = b.times[0].from;
+            return timeA.localeCompare(timeB);
+          });
+          
+          // Assume first one is weekdays, second is weekends/holidays
+          // This is a heuristic based on common patterns
+          processedSchedules = relevantSchedules.filter(s => s.days.length !== 7).concat([
+            { ...allDaySchedules[0], days: ["mon", "tue", "wed", "thu", "fri", "sat"] },
+            { ...allDaySchedules[1], days: ["sun", "holiday"] }
+          ]);
+        }
+
+        // Group schedules by identical times to consolidate display
+        const groupedByTimes = {};
+        processedSchedules.forEach(schedule => {
+          const timesKey = schedule.times.map(t => `${t.from}-${t.to}`).join(',');
+          if (!groupedByTimes[timesKey]) {
+            groupedByTimes[timesKey] = {
+              times: schedule.times,
+              days: new Set()
+            };
+          }
+          schedule.days.forEach(day => groupedByTimes[timesKey].days.add(day));
+        });
+
+        return (
+          <View style={styles.hoursContainer}>
+            {Object.values(groupedByTimes).map((group, index) => {
+              const timesText = group.times
+                .map((time) => `${time.from} - ${time.to}`)
+                .join(", ");
+
+              const daysArray = Array.from(group.days).sort((a, b) => 
+                dayOrder.indexOf(a) - dayOrder.indexOf(b)
+              );
+
+              // If all 7 days (or 6 without holiday) have the same hours, show "Every day"
+              if (daysArray.length === 7 || (daysArray.length === 6 && !daysArray.includes('holiday'))) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    {t("days.everyDay")}: {timesText}
+                  </Text>
+                );
+              }
+
+              // Check for weekdays pattern (mon-fri)
+              const weekdays = ["mon", "tue", "wed", "thu", "fri"];
+              const hasAllWeekdays = weekdays.every(day => daysArray.includes(day));
+              const onlyWeekdays = daysArray.length === 5 && hasAllWeekdays;
+
+              if (onlyWeekdays) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    {t("days.monFri")}: {timesText}
+                  </Text>
+                );
+              }
+
+              // Check for weekend pattern
+              const hasWeekend = daysArray.includes('sat') && daysArray.includes('sun');
+              const onlyWeekend = daysArray.length === 2 && hasWeekend;
+
+              if (onlyWeekend) {
+                return (
+                  <Text key={index} style={styles.hourText}>
+                    {t("days.satSun")}: {timesText}
+                  </Text>
+                );
+              }
+
+              // Otherwise show individual days
+              const daysText = daysArray
+                .map((day) => dayNames[day] || day)
+                .join(", ");
+
+              return (
+                <Text key={index} style={styles.hourText}>
+                  {daysText}: {timesText}
+                </Text>
+              );
+            })}
+          </View>
+        );
+      }
+
+      // Handle legacy string format
+      if (typeof openingHoursData === "string") {
+        const lines = openingHoursData
+          .replace(/\r/g, "")
           .split(/\r?\n/)
           .filter((line) => line.trim().length > 0);
 
@@ -72,13 +362,8 @@ const StationDetailsScreen = ({ route, navigation }) => {
           );
         }
       }
-      
-      // Fallback for non-string or empty strings
-      return (
-        <View style={styles.hoursContainer}>
-          <Text style={styles.hourText}>{openingHoursText}</Text>
-        </View>
-      );
+
+      return null;
     } catch (error) {
       console.error("Error handling opening hours:", error);
       return null;
@@ -116,21 +401,36 @@ const StationDetailsScreen = ({ route, navigation }) => {
       </Surface>
 
       <Surface style={styles.infoContainer}>
-        <Title style={styles.title}>{station.name}</Title>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>{station.name}</Text>
+          <View style={styles.titleActions}>
+            <StatusBadge label={statusLabel} status={statusKey} />
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              onPress={toggleFavorite}
+            >
+              <MaterialCommunityIcons
+                name={isFavorited ? "heart" : "heart-outline"}
+                size={24}
+                color={isFavorited ? "#ff4081" : "#666"}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.addressContainer}>
           <MaterialIcons name="location-on" size={20} color="#666" />
-          <Paragraph style={styles.address}>
+          <Text style={styles.address}>
             {station.address}{station.zip_code && `, ${station.zip_code}`}
-          </Paragraph>
+          </Text>
         </View>
 
         <Divider style={styles.divider} />
 
         {hasOpeningHours ? (
           <>
-            <Title style={styles.sectionTitle}>
+            <Text style={styles.sectionTitle}>
               {t("petrolStations.openingHours")}
-            </Title>
+            </Text>
             {isOpen24Hours ? (
               <View style={styles.open24Container}>
                 <MaterialIcons name="access-time" size={20} color="#2e7d32" />
@@ -145,9 +445,9 @@ const StationDetailsScreen = ({ route, navigation }) => {
           </>
         ) : (
           <>
-            <Title style={styles.sectionTitle}>
+            <Text style={styles.sectionTitle}>
               {t("petrolStations.openingHours")}
-            </Title>
+            </Text>
             <View style={styles.hoursContainer}>
               <Text style={styles.hourText}>
                 {t("petrolStations.noOpeningHours")}
@@ -159,32 +459,64 @@ const StationDetailsScreen = ({ route, navigation }) => {
 
         {station.prices && Object.keys(station.prices).length > 0 && (
           <>
-            <Title style={styles.sectionTitle}>{t("petrolStations.prices")}</Title>
+            <Text style={styles.sectionTitle}>{t("petrolStations.prices")}</Text>
             <View style={styles.pricesContainer}>
-              {station.prices["95"] && (
-                <View style={styles.priceCard}>
-                  <Text style={styles.fuelType}>95</Text>
-                  <Text style={styles.priceValue}>{station.prices["95"]} €</Text>
-                </View>
-              )}
-              {station.prices["dizel"] && (
-                <View style={styles.priceCard}>
-                  <Text style={styles.fuelType}>Dizel</Text>
-                  <Text style={styles.priceValue}>{station.prices["dizel"]} €</Text>
-                </View>
-              )}
-               {station.prices["98"] && (
-                <View style={styles.priceCard}>
-                  <Text style={styles.fuelType}>98</Text>
-                  <Text style={styles.priceValue}>{station.prices["98"]} €</Text>
-                </View>
-              )}
-              {station.prices["100"] && (
-                <View style={styles.priceCard}>
-                  <Text style={styles.fuelType}>100</Text>
-                  <Text style={styles.priceValue}>{station.prices["100"]} €</Text>
-                </View>
-              )}
+              {(() => {
+                const prices = station.prices || {};
+                const entries = Object.entries(prices)
+                  .filter(([_, val]) => val !== null && val !== undefined && val !== "")
+                  .map(([key, val]) => [key.toString(), val]);
+
+                if (entries.length === 0) {
+                  return (
+                    <Text style={styles.hourText}>{t("petrolStations.noOpeningHours")}</Text>
+                  );
+                }
+
+                const labelMap = {
+                  "95": "95",
+                  "98": "98",
+                  "100": "100",
+                  "dizel": "diesel",
+                  "dizel-premium": "dieselPremium",
+                  "avtoplin-lpg": "lpg",
+                  "lpg": "lpg",
+                  "cng": "cng",
+                  "lng": "lng",
+                  "hvo": "hvo",
+                  "koel": "heatingOil"
+                };
+
+                const order = [
+                  "95","98","100","dizel","dizel-premium","avtoplin-lpg","lpg","cng","lng","hvo","koel"
+                ];
+                const orderIndex = (k) => {
+                  const idx = order.indexOf(k.toLowerCase());
+                  return idx === -1 ? 999 : idx;
+                };
+                const toLabel = (k) => {
+                  const key = labelMap[k.toLowerCase()];
+                  if (key) {
+                    return t(`petrolStations.fuels.${key}`);
+                  }
+                  return k.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                };
+
+                const sorted = entries.sort((a, b) => orderIndex(a[0]) - orderIndex(b[0]));
+
+                return sorted.map(([fuelKey, value]) => (
+                  <View key={fuelKey} style={styles.priceCard}>
+                    <Text style={styles.fuelType}>{toLabel(fuelKey)}</Text>
+                    <Text style={styles.priceValue}>{formatPrice(value)}</Text>
+                    <View 
+                      style={[
+                        styles.priceBanner, 
+                        { backgroundColor: getFuelBannerColor(fuelKey) }
+                      ]} 
+                    />
+                  </View>
+                ));
+              })()}
             </View>
           </>
         )}
@@ -225,9 +557,41 @@ const styles = StyleSheet.create({
     elevation: 2,
     backgroundColor: '#fff'
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   title: {
     fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 8,
+    flexShrink: 1,
+    marginRight: 12,
+  },
+  titleActions: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+  },
+  favoriteButton: {
+    padding: 8,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusOpen: {
+    backgroundColor: '#e8f5e9',
+  },
+  statusClosed: {
+    backgroundColor: '#ffebee',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#333',
   },
   addressContainer: {
     flexDirection: "row",
@@ -243,6 +607,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
+    fontWeight: "bold",
     marginBottom: 16,
   },
   pricesContainer: {
@@ -258,11 +623,23 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     alignItems: "center",
+    overflow: "hidden", // Ensure banner doesn't overflow rounded corners
+    position: "relative",
+  },
+  priceBanner: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 8,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   fuelType: {
     fontSize: 16,
     color: "#666",
     marginBottom: 8,
+    textAlign: 'center', // Added for centering
   },
   priceValue: {
     fontSize: 24,

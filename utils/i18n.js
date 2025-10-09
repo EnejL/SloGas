@@ -5,18 +5,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Import translation files
 import slTranslations from "./translations/sl.json";
 import enTranslations from "./translations/en.json";
+import itTranslations from "./translations/it.json";
+import deTranslations from "./translations/de.json";
+import hrTranslations from "./translations/hr.json";
+
 
 // Storage key for language preference
-const LANGUAGE_STORAGE_KEY = "@mojAvto:language";
+const LANGUAGE_STORAGE_KEY = "@SloGas:language";
 
 // Configure resources
 const resources = {
-  sl: {
-    translation: slTranslations
-  },
-  en: {
-    translation: enTranslations
-  }
+  sl: { translation: slTranslations },
+  en: { translation: enTranslations },
+  it: { translation: itTranslations },
+  de: { translation: deTranslations },
+  hr: { translation: hrTranslations },
 };
 
 // Function to get saved language from storage
@@ -70,5 +73,55 @@ const initI18n = async () => {
 
 // Initialize immediately
 initI18n();
+
+// Price formatting utility with locale-specific decimal separators
+export const formatPrice = (price, language = null) => {
+  // Get current language if not provided
+  const currentLanguage = language || getCurrentLanguage();
+  
+  // Handle invalid or missing prices
+  if (price === null || price === undefined || price === '') {
+    return 'N/A';
+  }
+  
+  // Convert to number if it's a string
+  const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+  
+  // Handle invalid numbers
+  if (isNaN(numericPrice)) {
+    return 'N/A';
+  }
+  
+  // Format based on language
+  // English uses period as decimal separator (1.45 €)
+  // All other languages use comma as decimal separator (1,45 €)
+  if (currentLanguage === 'en') {
+    return `${numericPrice.toFixed(2)} €`;
+  } else {
+    // For all other languages (sl, it, de, hr), use comma as decimal separator
+    return `${numericPrice.toFixed(2).replace('.', ',')} €`;
+  }
+};
+
+// Alternative formatting function for prices without currency symbol
+export const formatPriceNumber = (price, language = null) => {
+  const currentLanguage = language || getCurrentLanguage();
+  
+  if (price === null || price === undefined || price === '') {
+    return 'N/A';
+  }
+  
+  const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+  
+  if (isNaN(numericPrice)) {
+    return 'N/A';
+  }
+  
+  if (currentLanguage === 'en') {
+    return numericPrice.toFixed(2);
+  } else {
+    return numericPrice.toFixed(2).replace('.', ',');
+  }
+};
 
 export default i18n;

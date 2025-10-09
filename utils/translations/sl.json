@@ -1,101 +1,4 @@
 {
-  "navigation": {
-    "home": "Domov",
-    "myVehicles": "Moja Vozila",
-    "fuelConsumption": "Poraba Goriva",
-    "petrolStations": "Črpalke",
-    "settings": "Nastavitve",
-    "back": "Nazaj"
-  },
-  "vehicles": {
-    "title": "Moja Vozila",
-    "details": "Podrobnosti",
-    "add": "Dodaj Vozilo",
-    "edit": "Uredi Vozilo",
-    "name": "Ime Vozila",
-    "make": "Znamka",
-    "model": "Model",
-    "addFirst": "Dodaj Svoje Prvo Vozilo",
-    "numberPlate": "Registrska oznaka",
-    "vehicleType": "Tip vozila",
-    "fuelTankSize": "Prostornina rezervoarja",
-    "batteryCapacity": "Kapaciteta baterije",
-    "empty": "Nimate še dodanih vozil",
-    "selected": "Izbrano vozilo",
-    "deleteVehicle": "Izbriši vozilo",
-    "deleteConfirmMessage": "Ste prepričani, da želite izbrisati to vozilo?",
-    "makePlaceholder": "Izberite znamko",
-    "modelPlaceholder": "Najprej izberite znamko",
-    "statistics": "Statistika vozila",
-    "history": "Zgodovina",
-    "noHistory": "Ni zabeleženih dogodkov",
-    "trueRunningCost": "Skupni strošek vožnje",
-    "monthlyEstimate": "Predvideni mesečni strošek",
-    "avgCostPer100km": "Povp. strošek na 100 km",
-    "totalCost": "Skupni strošek dosedanjih točenj / polnjenj",
-    "types": {
-      "ICE": "Bencin / dizel",
-      "HYBRID": "Hibrid (blagi / polni)",
-      "PHEV": "PHEV (priključni hibrid)",
-      "BEV": "Električno vozilo"
-    }
-  },
-  "fillings": {
-    "title": "Točenja goriva",
-    "nav": "Poraba goriva",
-    "date": "Datum",
-    "liters": "Litrov",
-    "cost": "Strošek",
-    "odometer": "Stanje Kilometrov",
-    "add": "Točenje +",
-    "empty": "Ni zabeleženih točenj",
-    "delete": "Odstrani vnos",
-    "consumption": "Povprečna poraba goriva",
-    "consumptionUnit": "l/100 km",
-    "distanceSince": "Prevoženi kilometri od zadnjega točenja",
-    "noVehiclesWarning": "Najprej morate dodati vozilo, preden lahko zabeležite točenja goriva.",
-    "noFillings": "Trenutno ni zabeleženih točenj goriva. Prosimo, vnesite vaše prvo točenje.",
-    "notEnoughData": "Ni dovolj podatkov. Vnesite vsaj dve točenji.",
-    "edit": "Uredi Točenje",
-    "deleteConfirmMessage": "Ste prepričani, da želite izbrisati to točenje?",
-    "filling": "točenje",
-    "statistics": "Statistika vozila",
-    "fuelConsumptionUnit": "l/100 km",
-    "avgCost": "Povprečni strošek točenja",
-    "avgPricePerLiter": "Povprečna cena litra goriva",
-    "avgLiters": "Povprečno točenje",
-    "totalCost": "Skupni strošek dosedanjih točenj",
-    "showConsumptionGraph": "Prikaži graf porabe",
-    "consumptionOverTime": "Poraba goriva skozi čas"
-  },
-  "charging": {
-    "title": "Polnjenja baterije",
-    "session": "polnjenje",
-    "add": "Polnjenje +",
-    "edit": "Uredi Polnjenje",
-    "empty": "Ni zabeleženih polnjenj",
-    "notEnoughData": "Ni dovolj podatkov. Vnesite vsaj dve polnjenji.",
-    "date": "Datum",
-    "energyAdded": "Dodana energija",
-    "cost": "Strošek",
-    "odometer": "Stanje kilometrov",
-    "locationType": "Tip lokacije",
-    "chargerType": "Tip polnilnika",
-    "locationName": "Ime lokacije",
-    "locationNamePlaceholder": "npr. Petrol Ljubljana",
-    "locationHome": "Doma",
-    "locationPublic": "Javno",
-    "locationWorkplace": "Služba",
-    "avgConsumption": "Poraba el. energije",
-    "electricityConsumptionUnit": "kWh/100 km",
-    "avgPricePerKWh": "Povprečna cena kWh",
-    "avgCost": "Povprečni strošek polnjenja",
-    "totalCost": "Skupni strošek dosedanjih poljenj",
-    "deleteConfirmMessage": "Ste prepričani, da želite izbrisati to polnjenje?",
-    "consumptionUnit": "kWh/100 km",
-    "moreDetails": "Dodaj podrobnosti",
-    "delete": "Izbriši polnjenje"
-  },
   "petrolStations": {
     "title": "Bencinske Črpalke",
     "list": "Seznam",
@@ -107,13 +10,27 @@
     "getDirections": "Navigacija",
     "openingHours": "Delovni Čas",
     "open24Hours": "Odprto 24 ur",
+    "open": "Odprto",
     "closed": "Zaprto",
+    "unknown": "Neznano",
     "noOpeningHours": "Informacije o delovnem času niso na voljo",
     "searchPlaceholder": "Išči po imenu ali naslovu",
     "noSearchResults": "Ni rezultatov iskanja",
     "empty": "Ni črpalk na voljo",
     "favorites": "Priljubljene",
-    "noFavorites": "Ni črpalk na voljo"
+    "noFavorites": "Ni črpalk na voljo",
+    "fuels": {
+      "diesel": "Dizel",
+      "dieselPremium": "Dizel Premium",
+      "95": "95",
+      "98": "98",
+      "100": "100",
+      "lpg": "LPG",
+      "cng": "CNG",
+      "lng": "LNG",
+      "hvo": "HVO",
+      "heatingOil": "Kurilno olje"
+    }
   },
   "settings": {
     "title": "Nastavitve",
@@ -121,7 +38,22 @@
     "languageSl": "🇸🇮 Slovenščina",
     "languageEn": "🇬🇧 English",
     "theme": "Tema",
-    "notifications": "Obvestila"
+    "notifications": "Obvestila",
+    "privacyPolicy": "Politika zasebnosti",
+    "termsOfUse": "Pogoji uporabe"
+  },
+  "days": {
+    "monday": "Ponedeljek",
+    "tuesday": "Torek",
+    "wednesday": "Sreda",
+    "thursday": "Četrtek",
+    "friday": "Petek",
+    "saturday": "Sobota",
+    "sunday": "Nedelja",
+    "holiday": "Praznik",
+    "everyDay": "Vsak dan",
+    "monFri": "Pon-Pet",
+    "satSun": "Sob-Ned"
   },
   "common": {
     "loading": "Nalaganje...",
@@ -143,212 +75,81 @@
     "faq": "Pogosto zastavljena vprašanja",
     "hide": "Skrij"
   },
-  "auth": {
-    "title": "Račun",
-    "email": "E-pošta",
-    "password": "Geslo",
-    "signIn": "Prijava",
-    "createAccount": "Ustvari Račun",
-    "anonymousInfo": "Trenutno uporabljate aplikacijo anonimno. Ustvarite račun za shranjevanje podatkov med napravami.",
-    "error": {
-      "createAccount": "Ustvarjanje računa ni uspelo",
-      "signIn": "Prijava ni uspela",
-      "signOut": "Odjava ni uspela",
-      "invalidCredentials": "Napačen email ali geslo",
-      "userDisabled": "Ta račun je onemogočen",
-      "tooManyAttempts": "Preveč poskusov. Prosimo, poskusite kasneje",
-      "unknownError": "Prišlo je do napake. Prosimo, poskusite ponovno",
-      "emailTaken": "Ta email je že v uporabi",
-      "weakPassword": "Geslo mora vsebovati vsaj 6 znakov",
-      "googleSignInFailed": "Prijava z Google računom ni uspela. Prosimo poskusite kasneje.",
-      "appleSignInFailed": "Prijava z Apple računom ni uspela. Prosimo poskusite kasneje.",
-      "userNotFound": "Uporabnik s tem e-poštnim naslovom ni najden",
-      "incorrectEmail": "Nepravilen e-poštni naslov",
-      "invalidEmailFormat": "Neveljaven e-poštni naslov",
-      "passwordsDontMatch": "Gesli se ne ujemata!"
-    },
-    "verification": {
-      "title": "Potrditev e-pošte",
-      "description": "E-pošta je poslana na {{email}}. Prosimo, preverite svojo e-pošto in kliknite na povezavo za potrditev.",
-      "instructions": "Prosimo, preverite svojo e-pošto in kliknite na povezavo za potrditev.",
-      "checkVerification": "Preveri",
-      "resendEmail": "Pošlji E-pošto Ponovno",
-      "signOut": "Prekliči"
-    },
-    "haveAccount": "Že imate račun? Prijavite se",
-    "needAccount": "Potrebujete račun?",
-    "signedInAs": "Prijavljeni kot {{email}}",
-    "signOut": "Odjava",
-    "greeting": "Pozdravljeni, {{name}}",
-    "greetingAnonymous": "Pozdravljeni!",
-    "accountManage": "Moj Račun",
-    "forgotPassword": "Ste pozabili geslo?",
-    "forgotPasswordInstructions": "Prosimo, vnesite svoj e-poštni naslov in prejeli boste navodila za ponastavitev gesla.",
-    "enterEmailFirst": "Prosimo, najprej vnesite svoj e-poštni naslov",
-    "resetEmailSent": "E-pošta za ponastavitev gesla poslana",
-    "checkEmail": "Preverite svojo e-pošto za navodila za ponastavitev gesla",
-    "resetError": "Napaka pri ponastavitvi gesla",
-    "confirmPassword": "Potrdi geslo",
-    "passwords-dont-match": "Gesli se ne ujemata",
-    "signInWithGoogle": "Prijava z Google računom",
-    "signInWithApple": "Prijava z Apple računom",
-    "or": "ali",
-    "googleSignInFailed": "Prijava z Google računom ni uspela. Prosimo poskusite ponovno.",
-    "appleSignInFailed": "Prijava z Apple računom ni uspela. Prosimo poskusite ponovno.",
-    "welcomeMessage": "Vaša vozila, na dlani!",
-    "deleteAccount": "Izbriši račun",
-    "deleteAccountConfirm": "Ste prepričani, da želite izbrisati svoj račun?",
-    "deleteAccountWarning": "Tega dejanja ni mogoče razveljaviti. Vsi vaši podatki bodo trajno izbrisani.",
-    "deleteAccountSuccess": "Račun je bil uspešno izbrisan",
-    "deleteAccountError": "Izbris računa ni uspel. Prosimo poskusite ponovno."
-  },
-  "faq": {
-    "title": "Pogosta vprašanja",
-    "questions": [
-      {
-        "question": "Ali je aplikacija brezplačna?",
-        "answer": "Da, aplikacija je popolnoma brezplačna za uporabo."
-      },
-      {
-        "question": "Kako dodam novo vozilo?",
-        "answer": "V glavnem meniju izberite 'Moja Vozila' in nato izberite 'Dodaj Vozilo'. Izpolnite zahtevane podatke o vozilu (znamka, model) in kliknite 'Dodaj Vozilo'."
-      },
-      {
-        "question": "Kako beležim polnjenje goriva?",
-        "answer": "Kliknite na želeno vozilo v meniju 'Moja Vozila', nato izberite 'Točenje +'. Vnesite datum točenja, količino natočenega goriva, skupno ceno točenja in stanje števca kilometrov. Aplikacija bo samodejno izračunala porabo ko bosta vnešeni najmanj dve točenji."
-      },
-      {
-        "question": "Kako beležim polnjenje elektrike?",
-        "answer": "Kliknite na želeno vozilo v meniju 'Moja Vozila', nato izberite 'Polnjenje +'. Vnesite datum polnjenja, količino električne energije, skupno ceno polnjenja in stanje števca kilometrov. Aplikacija bo samodejno izračunala porabo ko bosta vnešeni najmanj dve polnjenji."
-      },
-      {
-        "question": "Ali lahko dodam več vozil?",
-        "answer": "Da, lahko dodate več vozil. V meniju 'Moja Vozila' lahko dodate novo vozilo z istim postopkom kot pri prvem vozilu."
-      },
-      {
-        "question": "Ali lahko aplikacijo uporabljam tudi če je moje vozilo priključni hibrid (t.i. plug-in hybrid / PHEV)?",
-        "answer": "Da, aplikacijo lahko uporabljate tudi za priključne hibride. V meniju 'Moja Vozila' lahko dodate svoje hibridno vozilo po istem postopku kot pri bencinskem vozilu."
-      },
-      {
-        "question": "Ali se moji podatki sinhronizirajo med napravami?",
-        "answer": "Da, vsi vaši podatki se sinhronizirajo. To pomeni, da imate dostop do svojih podatkov na vseh napravah, kjer ste prijavljeni."
-      },
-      {
-        "question": "Kako izbrišem svoj račun?",
-        "answer": "Svoj račun lahko izbrišete neposredno iz aplikacije. Pojdite na zavihek Račun in se pomaknite navzdol, da najdete možnost 'Izbriši račun'. To bo trajno izbrisalo vse vaše podatke in tega ni mogoče razveljaviti."
-      },
-      {
-        "question": "Kako deluje izračun porabe goriva?",
-        "answer": "Aplikacija izračuna porabo na podlagi razlike v kilometrih med polnjenji in količine natočenega goriva. Formula je: (litri / razlika v kilometrih) * 100."
-      },
-      {
-        "question": "Kako deluje izračun porabe elektrike?",
-        "answer": "Aplikacija izračuna porabo na podlagi razlike v kilometrih med polnjenji in količino električne energije. Formula je: (kWh / razlika v kilometrih) * 100."
-      },
-      {
-        "question": "Ali lahko izvozim svoje podatke?",
-        "answer": "Trenutno ta funkcija še ni na voljo. Načrtujemo dodajanje možnosti izvoza podatkov v CSV formatu v prihodnosti."
-      }
-    ]
-  },
   "termsOfUse": {
-    "title": "Pogoji uporabe",
-    "lastUpdated": "Nazadnje posodobljeno: 24. Avgust 2025",
+    "title": "Pogoji uporabe za SloGas",
+    "lastUpdated": "Zadnja posodobitev: 30. september 2025",
     "sections": [
       {
-        "title": "1. Opis storitve",
-        "content": "\"DriveTrack Pro\" omogoča uporabnikom:",
-        "bulletPoints": [
-          "sledenje porabi goriva/elektrike"
-        ]
+        "title": "1. Sprejetje pogojev",
+        "content": "Z dostopom do te aplikacije in njeno uporabo sprejemate in se strinjate, da vas zavezujejo določila tega sporazuma. Če se s pogoji ne strinjate, prosimo, ne uporabljajte aplikacije."
       },
       {
-        "title": "2. Uporabniški račun",
-        "content": "Uporaba aplikacije je možna izključno z registriranim računom."
+        "title": "2. Opis storitve",
+        "content": "SloGas je brezplačna informativna mobilna aplikacija, ki uporabnikom ponuja lokacije in podatke o bencinskih servisih in polnilnicah za električna vozila v Sloveniji. Podatki so na voljo samo v informativne namene."
       },
       {
-        "title": "3. Omejitev odgovornosti",
-        "content": "Razvijalec ne jamči za popolno točnost prikazanih podatkov (cene goriva, lokacije, delovni časi).\nRazvijalec ne odgovarja za morebitno škodo, nastalo zaradi uporabe aplikacije."
+        "title": "3. Uporaba aplikacije",
+        "content": "Strinjate se, da boste SloGas uporabljali samo za predvideni namen. Sami ste odgovorni za vsa dejanja, ki jih sprejmete na podlagi informacij v aplikaciji (npr. navigacija do bencinskega servisa)."
       },
       {
-        "title": "4. Pravice razvijalca",
-        "content": "Razvijalec lahko anonimno analizira podatke za izboljšanje aplikacije."
+        "title": "4. Točnost podatkov",
+        "content": "Podatki o bencinskih servisih, vključno s cenami in lokacijami, izvirajo od tretjih ponudnikov preko storitve Firebase. Čeprav si prizadevamo za točnost, ne jamčimo, da bodo informacije vedno popolne, točne ali ažurne. Cene in razpoložljivost servisov se lahko hitro spreminjajo."
       },
       {
-        "title": "5. Prenehanje uporabe",
-        "content": "Uporabnik lahko izbriše svoj uporabniški račun kadarkoli neposredno iz aplikacije. Pojdite na zavihek Račun in izberite 'Izbriši račun'.\n\nZ izbrisom računa se vsi osebni podatki trajno izbrišejo in jih ni mogoče obnoviti."
+        "title": "5. Intelektualna lastnina",
+        "content": "Aplikacija in njena izvirna vsebina, funkcije in funkcionalnost so last ustvarjalca aplikacije in so zaščitene z mednarodnim avtorskim pravom ter drugimi zakoni o intelektualni lastnini."
       },
       {
-        "title": "6. Veljavna zakonodaja",
-        "content": "Za vse morebitne spore velja slovensko pravo.\nPristojna so sodišča v Sloveniji."
+        "title": "6. Omejitev odgovornosti",
+        "content": "V nobenem primeru SloGas ali njegov lastnik ne odgovarja za nobeno neposredno, posredno, naključno ali posledično škodo, ki bi nastala zaradi uporabe ali nezmožnosti uporabe storitve, vključno z netočnostmi ali pomanjkljivostmi v podatkih."
       },
       {
-        "title": "7. Starostne omejitve",
-        "content": "Aplikacija je namenjena uporabnikom starejšim od 18 let."
+        "title": "7. Spremembe pogojev",
+        "content": "Pridržujemo si pravico, da te pogoje kadarkoli spremenimo. Uporabnike bomo o spremembah obvestili s posodobitvijo datuma \"Zadnja posodobitev\" tega sporazuma."
+      },
+      {
+        "title": "8. Pristojno pravo",
+        "content": "Te pogoje ureja in razlaga zakonodaja Slovenije, ne glede na njena kolizijska določila."
       }
     ]
   },
   "privacyPolicy": {
-    "title": "Politika zasebnosti",
-    "lastUpdated": "Nazadnje posodobljeno: 24. Avgust 2025",
+    "title": "Politika zasebnosti za SloGas",
+    "lastUpdated": "Zadnja posodobitev: 30. september 2025",
     "sections": [
       {
-        "title": "1. Splošne informacije",
-        "content": "Aplikacijo \"DriveTrack Pro\" razvija Enej Ličina.\nZa vsa vprašanja o zasebnosti se lahko obrnete na: enej.dev@gmail.com."
+        "title": "1. Katere podatke zbiramo",
+        "content": "SloGas je preprosta aplikacija brez prijave. Zbiramo minimalno količino podatkov za zagotavljanje in izboljšanje naše storitve."
       },
       {
-        "title": "2. Namen aplikacije",
-        "content": "\"DriveTrack Pro\" omogoča uporabnikom sledenje porabi goriva oziroma električne energije za njihova vozila."
+        "content": "Podatki o lokaciji (neobvezno): Če podelite dovoljenje, lahko aplikacija dostopa do lokacije vaše naprave za prikaz bližnjih bencinskih servisov in vašega položaja na zemljevidu. Ti podatki se uporabljajo samo, ko je aplikacija aktivna, in se ne shranjujejo ali delijo. Aplikacijo lahko uporabljate tudi brez podelitve dovoljenja za lokacijo."
       },
       {
-        "title": "3. Zbiranje in obdelava osebnih podatkov",
-        "content": "Zbiramo naslednje podatke:",
-        "bulletPoints": [
-          "Ime in priimek",
-          "E-naslov",
-          "Podatke o vozilu (znamka, model, registrska številka)",
-          "Lokacijo (za iskanje bencinskih servisov)",
-          "Podatke o polnjenju goriva",
-          "Podatke o polnjenju elektrike"
-        ],
-        "subsections": [
-          {
-            "title": "Podlaga za obdelavo:",
-            "content": "Uporabniška privolitev pri registraciji računa."
-          },
-          {
-            "title": "Obdelava tretjih oseb:",
-            "content": "Uporabljamo Googlovo storitev Firebase za avtentikacijo in hranjenje podatkov."
-          },
-          {
-            "title": "Obdobje hrambe podatkov:",
-            "content": "Vaše podatke hranimo do izbrisa uporabniškega računa oz. največ 6 mesecev po izbrisu računa."
-          },
-          {
-            "title": "Vaše pravice:",
-            "bulletPoints": [
-              "Pravica do dostopa do podatkov",
-              "Pravica do izbrisa podatkov (\"pravica do pozabe\")"
-            ],
-            "content": "Za uveljavljanje pravic nas kontaktirajte na zgoraj navedeni e-naslov."
-          }
-        ]
+        "content": "Anonimni podatki o uporabi: Aplikacija uporablja standardno, neosebno analitiko (npr. preko Firebase Analytics) za razumevanje vedenja uporabnikov, kot so najpogosteje uporabljene funkcije in prepoznavanje zrušitev. To nam pomaga izboljšati aplikacijo. Ti podatki so združeni in jih ni mogoče uporabiti za vašo osebno identifikacijo."
       },
       {
-        "title": "4. Piškotki in analitika",
-        "content": "Aplikacija uporablja Google Analytics for Firebase za zbiranje anonimnih podatkov o uporabi. Namen je izključno analiza uporabe aplikacije.\nPiškotkov ni možno onemogočiti znotraj aplikacije."
+        "title": "2. Kako uporabljamo vaše podatke",
+        "content": "Za zagotavljanje storitve: Podatki o lokaciji se uporabljajo za prilagoditev pogleda zemljevida vaši trenutni bližini.\n\nZa izboljšanje aplikacije: Anonimni podatki o uporabi nam pomagajo razumeti, kako se aplikacija uporablja, kar nam omogoča odpravljanje napak in izboljšanje uporabniške izkušnje."
       },
       {
-        "title": "5. Posredovanje podatkov v tretje države",
-        "content": "Podatki se ne prenašajo izven EU/EGP."
+        "title": "3. Podatki, ki jih ne zbiramo",
+        "content": "Ne zbiramo nobenih osebnih identifikacijskih podatkov (PII), kot so vaše ime, e-poštni naslov, telefonska številka ali identifikatorji naprave. Aplikacija nima uporabniških računov ali funkcionalnosti prijave."
       },
       {
-        "title": "6. Starostna omejitev",
-        "content": "Aplikacijo lahko uporabljajo samo osebe, stare 18 let ali več."
+        "title": "4. Deljenje podatkov",
+        "content": "Vaših podatkov ne prodajamo, ne trgujemo z njimi in jih ne prenašamo tretjim osebam. Anonimni, združeni podatki o uporabi se lahko uporabljajo za interno analizo, vendar se ne delijo na način, ki bi lahko identificiral kateregakoli posameznega uporabnika."
       },
       {
-        "title": "7. Blagovne znamke",
-        "content": "Vse blagovne znamke in logotipi (znamke vozil, logotipi bencinskih servisov ipd.) so last njihovih zakonitih imetnikov."
+        "title": "5. Vaše soglasje",
+        "content": "Z uporabo naše aplikacije se strinjate z našo politiko zasebnosti."
+      },
+      {
+        "title": "6. Spremembe naše politike zasebnosti",
+        "content": "Če se odločimo spremeniti našo politiko zasebnosti, bomo te spremembe objavili na tej strani in posodobili datum \"Zadnja posodobitev\"."
+      },
+      {
+        "title": "7. Kontakt",
+        "content": "Če imate kakršnakoli vprašanja glede te politike zasebnosti, nas lahko kontaktirate."
       }
     ]
   }

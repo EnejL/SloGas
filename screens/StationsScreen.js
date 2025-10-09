@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -15,15 +15,68 @@ import {
 import { Surface, Searchbar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { TabView, TabBar } from "react-native-tab-view";
-import MapView, { Marker, PROVIDER_GOOGLE, Callout } from "react-native-maps";
+import MapView from "react-native-map-clustering";
+import { Marker, PROVIDER_GOOGLE, Callout } from "react-native-maps";
 import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
 import { db } from "../utils/firebase";
 import { useFocusEffect } from "@react-navigation/native";
 import { addToFavorites, removeFromFavorites, getFavoriteIds } from "../utils/favorites";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import StatusBadge from "../components/StatusBadge";
 
 const initialLayout = { width: Dimensions.get("window").width };
+
+const isStationOpen = (station) => {
+  const openingHours = station.opening_hours || station.open_hours;
+  
+  // Handle special cases
+  if (openingHours === "24/7") return true;
+  if (openingHours === "closed") return false;
+  if (!openingHours) return null; // Unknown
+  
+  // Handle structured array format
+  if (Array.isArray(openingHours)) {
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const currentMonth = now.getMonth() + 1; // 1-12
+    const currentTime = now.getHours() * 60 + now.getMinutes(); // Minutes since midnight
+    
+    // Map JS day numbers to our day codes
+    const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const todayCode = dayMap[currentDay];
+    
+    // Filter schedules relevant to today
+    const relevantSchedules = openingHours.filter(schedule => {
+      // Check if this schedule applies to current month (if months specified)
+      if (schedule.months && schedule.months.length > 0) {
+        if (!schedule.months.includes(currentMonth)) return false;
+      }
+      
+      // Check if this schedule applies to today
+      return schedule.days.includes(todayCode);
+    });
+    
+    // Check if any relevant schedule covers the current time
+    for (const schedule of relevantSchedules) {
+      for (const timeSlot of schedule.times) {
+        const [fromHour, fromMin] = timeSlot.from.split(':').map(Number);
+        const [toHour, toMin] = timeSlot.to.split(':').map(Number);
+        
+        const fromTime = fromHour * 60 + fromMin;
+        const toTime = toHour * 60 + toMin;
+        
+        if (currentTime >= fromTime && currentTime <= toTime) {
+          return true;
+        }
+      }
+    }
+    
+    return false; // No matching schedule found
+  }
+  
+  return null; // Unknown format
+};
 
 const fetchPetrolStations = async () => {
   try {
@@ -59,16 +112,35 @@ const StationsScreen = ({ navigation }) => {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredStations, setFilteredStations] = useState([]);
   const [favoriteStationIds, setFavoriteStationIds] = useState(new Set());
   const [index, setIndex] = useState(0);
-
-  const [routes] = useState([
+  const [routes, setRoutes] = useState([
     { key: 'map', title: t('petrolStations.map') },
     { key: 'list', title: t('petrolStations.list') },
     { key: 'favorites', title: t('petrolStations.favorites') },
   ]);
+
+  useEffect(() => {
+    setRoutes([
+      { key: 'map', title: t('petrolStations.map') },
+      { key: 'list', title: t('petrolStations.list') },
+      { key: 'favorites', title: t('petrolStations.favorites') },
+    ]);
+  }, [t]);
+
+  // Add a settings icon to the header
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Settings')}
+          style={{ padding: 8 }}
+        >
+          <MaterialIcons name="settings" size={22} color="black" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const fetchFavoriteIds = useCallback(async () => {
       try {
@@ -90,7 +162,30 @@ const StationsScreen = ({ navigation }) => {
     try {
       const data = await fetchPetrolStations();
       setStations(data);
-      setFilteredStations(data);
+      
+      // Log open/closed statistics
+      const now = new Date();
+      const openStations = [];
+      const closedStations = [];
+      const unknownStations = [];
+      
+      data.forEach(station => {
+        const isOpen = isStationOpen(station);
+        if (isOpen === true) {
+          openStations.push(station);
+        } else if (isOpen === false) {
+          closedStations.push(station);
+        } else {
+          unknownStations.push(station);
+        }
+      });
+      
+      // Show breakdown by status
+      const openPercentage = ((openStations.length / data.length) * 100).toFixed(1);
+      const closedPercentage = ((closedStations.length / data.length) * 100).toFixed(1);
+      console.log(`Open: ${openPercentage}% | Closed: ${closedPercentage}%`);
+      console.log('═'.repeat(60));
+      
     } catch (error) {
       console.error("Error loading petrol stations:", error);
       setError(t("petrolStations.fetchError"));
@@ -99,28 +194,17 @@ const StationsScreen = ({ navigation }) => {
     }
   }, [t]);
 
+  useEffect(() => {
+    loadStations();
+  }, [loadStations]);
+
   useFocusEffect(
     React.useCallback(() => {
-      loadStations();
       fetchFavoriteIds(); // Re-fetch favorites when screen is focused
-    }, [loadStations, fetchFavoriteIds])
+    }, [fetchFavoriteIds])
   );
-
-  const handleSearch = useCallback((query) => {
-    setSearchQuery(query);
-    if (query) {
-      const filtered = stations.filter(station =>
-        station.name.toLowerCase().includes(query.toLowerCase()) ||
-        station.address.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredStations(filtered);
-    } else {
-      setFilteredStations(stations);
-    }
-  }, [stations]);
   
   const favoriteStations = React.useMemo(() => 
-    // FIX: Use station.pk for matching against the Set of favorite IDs
     stations.filter(station => favoriteStationIds.has(station.pk)),
     [stations, favoriteStationIds]
   );
@@ -130,7 +214,7 @@ const StationsScreen = ({ navigation }) => {
       case 'map':
         return (
           <StationMapScreen
-            stations={filteredStations}
+            stations={stations}
             loading={loading}
             error={error}
             navigation={navigation}
@@ -139,32 +223,22 @@ const StationsScreen = ({ navigation }) => {
       case 'list':
         return (
           <StationListScreen
-            stations={filteredStations}
+            stations={stations}
             loading={loading}
             error={error}
             navigation={navigation}
-            searchQuery={searchQuery}
-            onSearch={handleSearch}
             onRefresh={loadStations}
             favoriteStationIds={favoriteStationIds}
             onFavoritesChange={fetchFavoriteIds}
           />
         );
       case 'favorites':
-        const favoriteQuery = searchQuery && route.key === 'favorites'
-            ? favoriteStations.filter(station =>
-                station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                station.address.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-            : favoriteStations;
         return (
           <StationListScreen
-            stations={favoriteQuery}
+            stations={favoriteStations}
             loading={loading}
             error={error}
             navigation={navigation}
-            searchQuery={searchQuery}
-            onSearch={handleSearch}
             isFavorites={true}
             onRefresh={() => { loadStations(); fetchFavoriteIds(); }}
             favoriteStationIds={favoriteStationIds}
@@ -179,9 +253,6 @@ const StationsScreen = ({ navigation }) => {
     loading,
     error,
     navigation,
-    filteredStations,
-    searchQuery,
-    handleSearch,
     loadStations,
     favoriteStationIds,
     fetchFavoriteIds,
@@ -203,6 +274,11 @@ const StationsScreen = ({ navigation }) => {
             labelStyle={{ color: 'black', fontWeight: 'bold' }}
             activeColor={'#000000'}
             inactiveColor={'#777777'}
+            renderLabel={({ route }) => (
+              <Text style={{ color: 'black', fontWeight: 'bold' }}>
+                {route.key === 'map' ? t('petrolStations.map') : route.key === 'list' ? t('petrolStations.list') : t('petrolStations.favorites')}
+              </Text>
+            )}
           />
         )}
       />
@@ -215,8 +291,6 @@ const StationListScreen = ({
   loading, 
   error, 
   navigation,
-  searchQuery,
-  onSearch,
   isFavorites = false,
   onRefresh,  
   favoriteStationIds,
@@ -224,6 +298,21 @@ const StationListScreen = ({
 }) => {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+  
+  const filteredStations = React.useMemo(() => {
+    if (!searchQuery) {
+      return stations;
+    }
+    return stations.filter(station =>
+      station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      station.address.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [stations, searchQuery]);
 
   const handleRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -260,6 +349,13 @@ const StationListScreen = ({
   const renderItem = useCallback(({ item }) => {
     // FIX: Use item.pk to check if the station is favorited
     const isFavorited = favoriteStationIds.has(item.pk);
+    const openState = isStationOpen(item);
+    const statusKey = openState === true ? "open" : openState === false ? "closed" : "unknown";
+    const statusLabel = openState === true
+      ? t("petrolStations.open")
+      : openState === false
+        ? t("petrolStations.closed")
+        : t("petrolStations.unknown");
     return (
       <TouchableOpacity
         style={styles.stationItem}
@@ -270,6 +366,7 @@ const StationListScreen = ({
             <Text style={styles.stationName}>{item.name}</Text>
             <Text style={styles.stationAddress}>{item.address}</Text>
           </View>
+          <StatusBadge label={statusLabel} status={statusKey} style={{ marginHorizontal: 8, alignSelf: 'center' }} />
           <TouchableOpacity
             style={styles.favoriteButton}
             // FIX: Pass item.pk to the toggle function
@@ -307,13 +404,13 @@ const StationListScreen = ({
         <Surface style={styles.searchContainer}>
           <Searchbar
             placeholder={t("petrolStations.searchPlaceholder")}
-            onChangeText={onSearch}
+            onChangeText={handleSearch}
             value={searchQuery}
             style={styles.searchBar}
           />
         </Surface>
 
-      {stations.length === 0 ? (
+      {filteredStations.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
             {isFavorites 
@@ -325,7 +422,7 @@ const StationListScreen = ({
         </View>
       ) : (
         <FlatList
-          data={stations}
+          data={filteredStations}
           // FIX: Use item.pk for the key, as it's the unique identifier
           keyExtractor={(item) => item.pk.toString()}
           renderItem={renderItem}
@@ -451,20 +548,27 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
         initialRegion={region}
         onRegionChangeComplete={setRegion}
         showsUserLocation={true}
-        clusterColor="#2e7d32"
+        // clusterColor="#2e7d32"
+        clusterColor="blue"
+        clusterTextColor="#fff"
       >
         {stations.map((station) => (
           <Marker
-            // FIX: Use station.pk for the key
             key={station.pk}
-            // FIX: Use station.lat and station.lng for coordinates
             coordinate={{ latitude: station.lat, longitude: station.lng }}
             tracksViewChanges={false}
+            // onPress={() => onMarkerPress(station)}
           >
-            <Callout
-              tooltip
-              onPress={() => onMarkerPress(station)}
-            >
+            {(() => {
+              const isOpen = isStationOpen(station);
+              const color = isOpen === true ? '#2e7d32' : isOpen === false ? '#d32f2f' : '#9e9e9e';
+              return (
+                <View style={styles.markerWrapper}>
+                  <MaterialIcons name="place" size={40} color={color} />
+                </View>
+              );
+            })()}
+            <Callout tooltip onPress={() => onMarkerPress(station)}>
               <View style={styles.calloutContainer}>
                 <Text style={styles.calloutTitle}>{station.name}</Text>
                 <Text style={styles.calloutAddress}>{station.address}</Text>
@@ -621,6 +725,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     textAlign: "center",
+  },
+  markerWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  markerDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: '#ffffff',
+    elevation: 3,
   },
 });
 

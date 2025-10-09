@@ -1,6 +1,6 @@
-# MojAvto
+# SloGas
 
-MojAvto is a React Native application for managing and tracking your vehicle-related activities.
+SloGas is a React Native application for managing and tracking your vehicle-related activities.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ MojAvto is a React Native application for managing and tracking your vehicle-rel
 1. Clone the repository:
 ```bash
 git clone [repository-url]
-cd mojAvto
+cd SloGas
 ```
 
 2. Install dependencies:
@@ -30,131 +30,116 @@ cd ios && pod install && cd ..
 
 ## Development
 
-### Running the App
+A collection of useful commands for building and running the application during development.
 
-#### iOS
+### Build commands
+Builds the application for the specified platform and profile using EAS.
+
+**Production iOS Build**
 ```bash
-# Using npm script
-npm run ios
-
-# Using React Native CLI directly (this is the preffered method)
-npx react-native run-ios
+eas build --platform ios --profile production --clear-cache
 ```
 
-#### Android
+**Development iOS Build**
 ```bash
-# Using npm script
-npm run android
-
-# Using React Native CLI directly
-npx react-native run-android
+eas build --profile development --platform ios --clear-cache
 ```
 
-### Development Workflow
-
-1. Start Metro bundler (in one terminal):
-```bash
-npx react-native start
-```
-
-2. Run the app (in another terminal):
-```bash
-# For iOS
-npm run ios
-# or
-npx react-native run-ios
-
-# For Android
-npm run android
-# or
-npx react-native run-android
-```
-
-### Common Development Commands
+### Clean and regenerate native files
+Cleans and regenerates the native `ios` and `android` directories. This is useful when native dependencies have been added or changed.
 
 ```bash
-# Clear Metro bundler cache
-npx react-native start --reset-cache
-
-# Clean build (if you encounter build issues)
-# For iOS
-cd ios && rm -rf build/ && pod install && cd .. && npx react-native run-ios
-
-# For Android
-cd android && ./gradlew clean && cd .. && npx react-native run-android
+npx expo prebuild --platform ios --clean
 ```
 
-### Testing
+### Submit to App Store Connect
+Submits the latest successful build to the Apple App Store for review.
 
 ```bash
-# Run tests
-npm test
-
-# Run tests in watch mode
-npm test -- --watch
+eas submit --platform ios --latest
 ```
 
-### Debugging
+### Start development server
+Starts the local development server and launches the app in a simulator or on a connected device.
 
 ```bash
-# Open React Native Debugger
-npx react-native-debugger
-
-# Enable remote debugging in the app
-# Shake your device or press Cmd+D (iOS) / Cmd+M (Android) in the simulator
+npx expo start --dev-client
 ```
 
-### Troubleshooting
+## Firebase Cloud Functions
+
+The app uses Firebase Cloud Functions to fetch and parse petrol station data from an external API.
+
+### Prerequisites
+
+Before deploying Firebase Functions, ensure you have:
+
+1. **Firebase CLI installed globally:**
+```bash
+npm install -g firebase-tools
+```
+
+2. **Authenticated with Firebase:**
+```bash
+firebase login
+```
+
+This will open a browser window to authenticate with your Google account that has access to the Firebase project.
+
+### Testing the Parser
+
+The `parseOpenHours` function converts inconsistent opening hours strings into structured JSON data. To test the parser locally:
 
 ```bash
-# Clear watchman watches
-watchman watch-del-all
-
-# Clear npm cache
-npm cache clean --force
-
-# Reinstall node modules
-rm -rf node_modules
-npm install
+cd functions
+node testParser.js
 ```
 
-### Updating Dependencies
+This will run all 289 real-world test cases from the API and display:
+- Each input string and its parsed output
+- A summary showing success rate
+- Any failed test cases (if any)
+
+### Deploying Functions
+
+To deploy the Cloud Functions to Firebase:
 
 ```bash
-# Update all dependencies
-npm update
-
-# Update specific package
-npm update package-name
-
-# Check for outdated packages
-npm outdated
+firebase deploy --only functions
 ```
 
-## Project Structure
+**What this does:**
+- Uploads your Cloud Functions code to Firebase
+- Deploys only the functions (won't affect Firestore rules, hosting, etc.)
+- Makes the scheduled function (`fetchFuelData`) and HTTP function (`testFetchFuelData`) available
 
+**What happens after deployment:**
+- `fetchFuelData` runs automatically every Tuesday at 4:00 AM (Europe/Ljubljana timezone)
+- `testFetchFuelData` can be triggered manually via HTTP request
+
+### Manually Triggering Data Update
+
+There are two ways to update the petrol station data without waiting for the scheduled function:
+
+**Option 1: Call the HTTP Test Function (Recommended)**
+
+After deploying, Firebase will provide a URL for `testFetchFuelData`. Call it using:
+
+```bash
+curl -X POST https://[your-region]-[your-project-id].cloudfunctions.net/testFetchFuelData
 ```
-mojAvto/
-├── android/          # Android native code
-├── ios/             # iOS native code
-├── components/      # Reusable components
-├── screens/         # Screen components
-├── utils/           # Utility functions and services
-│   ├── translations/ # Internationalization files
-│   ├── auth.js      # Authentication utilities
-│   ├── firebase.js  # Firebase configuration
-│   └── ...          # Other utility files
-├── assets/          # Images, fonts, etc.
-├── App.js           # Main application component
-└── package.json     # Project dependencies
-```
 
-## Contributing
+Or simply open the URL in your browser.
 
-1. Create a new branch for your feature
-2. Make your changes
-3. Submit a pull request
+**Option 2: Use Firebase Console**
 
-## License
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Navigate to Functions
+3. Find `testFetchFuelData`
+4. Click the URL to trigger it
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+The function will fetch all petrol station data, parse the opening hours, and update Firestore immediately.
+
+## Future Plans
+
+Home Screen Widgets: Implement home screen widgets for both iOS and Android to provide users with quick access to information, such as the location and price of the nearest petrol station.
