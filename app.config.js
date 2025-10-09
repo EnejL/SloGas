@@ -13,7 +13,7 @@ export default {
       "bundleIdentifier": "com.enejlicina.slogas",
       "deploymentTarget": "15.1",
       "associatedDomains": ["applinks:verify.enejlicina.com"],
-      "buildNumber": "1",
+      "buildNumber": "2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
