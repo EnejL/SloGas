@@ -180,15 +180,6 @@ const StationsScreen = ({ navigation }) => {
         }
       });
       
-      console.log('═'.repeat(60));
-      console.log('PETROL STATIONS STATUS - ' + now.toLocaleString());
-      console.log('═'.repeat(60));
-      console.log('🟢 OPEN NOW:    ', openStations.length, 'stations');
-      console.log('🔴 CLOSED NOW:  ', closedStations.length, 'stations');
-      console.log('⚪ UNKNOWN:     ', unknownStations.length, 'stations');
-      console.log('📊 TOTAL:       ', data.length, 'stations');
-      console.log('═'.repeat(60));
-      
       // Show breakdown by status
       const openPercentage = ((openStations.length / data.length) * 100).toFixed(1);
       const closedPercentage = ((closedStations.length / data.length) * 100).toFixed(1);

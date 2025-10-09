@@ -17,6 +17,7 @@ import StatusBadge from "../components/StatusBadge";
 import { formatPrice } from "../utils/i18n";
 import { addToFavorites, removeFromFavorites, getFavoriteIds } from "../utils/favorites";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useFocusEffect } from "@react-navigation/native";
 
 const StationDetailsScreen = ({ route, navigation }) => {
   const { station } = route.params;
@@ -28,34 +29,45 @@ const StationDetailsScreen = ({ route, navigation }) => {
     navigation.setOptions({ title: station.name });
   }, [navigation, station]);
 
+  // Function to check favorite status
+  const checkFavoriteStatus = useCallback(async () => {
+    try {
+      const favoriteIds = await getFavoriteIds();
+      setIsFavorited(favoriteIds.has(station.pk));
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+    }
+  }, [station.pk]);
+
   // Check if station is favorited on component mount
   useEffect(() => {
-    const checkFavoriteStatus = async () => {
-      try {
-        const favoriteIds = await getFavoriteIds();
-        setIsFavorited(favoriteIds.has(station.pk.toString()));
-      } catch (error) {
-        console.error("Error checking favorite status:", error);
-      }
-    };
     checkFavoriteStatus();
-  }, [station.pk]);
+  }, [checkFavoriteStatus]);
+
+  // Refresh favorite status when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      checkFavoriteStatus();
+    }, [checkFavoriteStatus])
+  );
 
   // Toggle favorite status
   const toggleFavorite = useCallback(async () => {
     try {
       if (isFavorited) {
-        await removeFromFavorites(station.pk.toString());
+        await removeFromFavorites(station.pk);
         setIsFavorited(false);
       } else {
-        await addToFavorites(station.pk.toString());
+        await addToFavorites(station.pk);
         setIsFavorited(true);
       }
+      // Refresh the favorite status to ensure consistency
+      await checkFavoriteStatus();
     } catch (error) {
       console.error("Error toggling favorite:", error);
       Alert.alert(t("common.error"), t("common.error.favorite") || "Failed to update favorites");
     }
-  }, [isFavorited, station.pk, t]);
+  }, [isFavorited, station.pk, t, checkFavoriteStatus]);
 
   // Function to get banner color based on fuel type
   const getFuelBannerColor = (fuelKey) => {
@@ -137,20 +149,14 @@ const StationDetailsScreen = ({ route, navigation }) => {
   useEffect(() => {
     try {
       const prices = station && station.prices ? station.prices : {};
-      console.log('════════════════════════════════════════');
-      console.log('STATION PRICES DEBUG');
-      console.log('Name:', station?.name, '| pk:', station?.pk);
-      console.log('Raw prices object:', JSON.stringify(prices, null, 2));
       const entries = Object.entries(prices || {});
       if (entries.length === 0) {
         console.log('No prices available for this station.');
       } else {
-        console.log('Parsed price entries:');
         entries.forEach(([fuelKey, value]) => {
           console.log(`  ${fuelKey}: ${value}`);
         });
       }
-      console.log('════════════════════════════════════════');
     } catch (e) {
       console.log('Error logging station prices:', e?.message || e);
     }
