@@ -35,14 +35,20 @@ A collection of useful commands for building and running the application during 
 ### Build commands
 Builds the application for the specified platform and profile using EAS.
 
-**Production iOS Build**
+**Production Builds**
 ```bash
 eas build --platform ios --profile production --clear-cache
 ```
+```bash
+eas build --platform android --profile production --clear-cache
+```
 
-**Development iOS Build**
+**Development Builds**
 ```bash
 eas build --profile development --platform ios --clear-cache
+```
+```bash
+eas build --profile development --platform android --clear-cache
 ```
 
 ### Clean and regenerate native files
@@ -57,6 +63,12 @@ Submits the latest successful build to the Apple App Store for review.
 
 ```bash
 eas submit --platform ios --latest
+```
+### Submit to Google Play Console
+Submits the latest successful build to the Google Play Console for review.
+
+```bash
+eas submit --platform android --latest
 ```
 
 ### Start development server
