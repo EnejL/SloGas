@@ -66,6 +66,42 @@ Starts the local development server and launches the app in a simulator or on a 
 npx expo start --dev-client
 ```
 
+## Splash Screen Management
+
+The app includes an automated script to easily update the splash screen across all platforms.
+
+### Updating the Splash Screen
+
+To update the splash screen image:
+
+1. **Replace the main splash screen image:**
+   ```bash
+   # Place your new splash screen image at:
+   assets/splashscreen.png
+   ```
+
+2. **Run the update script:**
+   ```bash
+   ./update-splash.sh
+   ```
+
+3. **Rebuild the app to see changes:**
+   ```bash
+   # For iOS
+   expo run:ios
+   
+   # For Android
+   expo run:android
+   ```
+
+**What the script does:**
+- Automatically copies your new image to all required locations
+- Updates iOS splash screen in the Xcode project
+- Updates Android splash screen for all screen densities (hdpi, mdpi, xhdpi, xxhdpi, xxxhdpi)
+- Provides feedback on what was updated
+
+**Note:** If using Expo Go, the splash screen will update automatically without rebuilding.
+
 ## Firebase Cloud Functions
 
 The app uses Firebase Cloud Functions to fetch and parse petrol station data from an external API.

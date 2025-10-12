@@ -1,4 +1,4 @@
-package com.enejlicina.drivetrackpro
+package com.enejlicina.slogas
 
 import android.os.Build
 import android.os.Bundle
