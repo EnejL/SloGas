@@ -5,6 +5,11 @@ export default {
     "version": "1.0.0", 
     "orientation": "portrait",
     "icon": "./assets/app-icon-ios.png",
+    "splash": {
+      "image": "./assets/splashscreen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A1D33"
+    },
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "scheme": "com.enejlicina.slogas",
