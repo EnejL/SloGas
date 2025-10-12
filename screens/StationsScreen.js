@@ -635,7 +635,7 @@ const styles = StyleSheet.create({
   },
   zoomControlsContainer: {
     position: "absolute",
-    right: 16,
+    left: 16,
     top: 16,
     backgroundColor: "transparent",
   },
