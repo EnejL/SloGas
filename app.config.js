@@ -2,7 +2,7 @@ export default {
   "expo": {
     "name": "SloGas",
     "slug": "slogas",
-    "version": "1.0.0", 
+    "version": "1.1.0", 
     "orientation": "portrait",
     "icon": "./assets/app-icon-ios.png",
     "splash": {
@@ -18,7 +18,7 @@ export default {
       "bundleIdentifier": "com.enejlicina.slogas",
       "deploymentTarget": "15.1",
       "associatedDomains": ["applinks:verify.enejlicina.com"],
-      "buildNumber": "3",
+      "buildNumber": "4",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -29,7 +29,7 @@ export default {
     },
     "android": {
       "package": "com.enejlicina.slogas",
-      "versionCode": 3,
+      "versionCode": 4,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/app-icon-android.png",

@@ -13,6 +13,8 @@
     "open": "Open",
     "closed": "Closed",
     "unknown": "Unknown",
+    "all": "All",
+    "filter": "Filter",
     "noOpeningHours": "Opening hours information not available",
     "searchPlaceholder": "Search by name or address",
     "noSearchResults": "No search results",

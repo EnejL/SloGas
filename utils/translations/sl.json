@@ -13,6 +13,8 @@
     "open": "Odprto",
     "closed": "Zaprto",
     "unknown": "Neznano",
+    "all": "Vse",
+    "filter": "Filter",
     "noOpeningHours": "Informacije o delovnem času niso na voljo",
     "searchPlaceholder": "Išči po imenu ali naslovu",
     "noSearchResults": "Ni rezultatov iskanja",

@@ -11,6 +11,7 @@ import {
   Alert,
   RefreshControl,
   SafeAreaView,
+  Animated,
 } from "react-native";
 import { Surface, Searchbar } from "react-native-paper";
 import { useTranslation } from "react-i18next";
@@ -299,20 +300,33 @@ const StationListScreen = ({
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterOpen, setFilterOpen] = useState(null); // null = all, true = open only, false = closed only
 
   const handleSearch = (query) => {
     setSearchQuery(query);
   };
   
   const filteredStations = React.useMemo(() => {
-    if (!searchQuery) {
-      return stations;
+    let filtered = stations;
+    
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(station =>
+        station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        station.address.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
-    return stations.filter(station =>
-      station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      station.address.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [stations, searchQuery]);
+    
+    // Apply open/closed filter
+    if (filterOpen !== null) {
+      filtered = filtered.filter(station => {
+        const isOpen = isStationOpen(station);
+        return isOpen === filterOpen;
+      });
+    }
+    
+    return filtered;
+  }, [stations, searchQuery, filterOpen]);
 
   const handleRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -401,6 +415,54 @@ const StationListScreen = ({
 
   return (
     <View style={styles.container}>
+        {/* Filter Buttons */}
+        <Surface style={styles.filterContainer}>
+          <View style={styles.filterButtons}>
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                filterOpen === null && styles.filterButtonActive
+              ]}
+              onPress={() => setFilterOpen(null)}
+            >
+              <Text style={[
+                styles.filterButtonText,
+                filterOpen === null && styles.filterButtonTextActive
+              ]}>
+                {t("petrolStations.all")}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                filterOpen === true && styles.filterButtonActive
+              ]}
+              onPress={() => setFilterOpen(true)}
+            >
+              <Text style={[
+                styles.filterButtonText,
+                filterOpen === true && styles.filterButtonTextActive
+              ]}>
+                {t("petrolStations.open")}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                filterOpen === false && styles.filterButtonActive
+              ]}
+              onPress={() => setFilterOpen(false)}
+            >
+              <Text style={[
+                styles.filterButtonText,
+                filterOpen === false && styles.filterButtonTextActive
+              ]}>
+                {t("petrolStations.closed")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Surface>
+
         <Surface style={styles.searchContainer}>
           <Searchbar
             placeholder={t("petrolStations.searchPlaceholder")}
@@ -451,6 +513,9 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
     longitudeDelta: 1.5,
   });
   const [userLocation, setUserLocation] = useState(null);
+  const [filterOpen, setFilterOpen] = useState(null); // null = all, true = open only, false = closed only
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const filterPanelAnimation = useRef(new Animated.Value(0)).current;
 
   const getUserLocation = useCallback(async () => {
     try {
@@ -523,6 +588,44 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
       navigation.navigate("StationDetails", { station });
   };
 
+  // Filter stations based on open/closed status
+  const filteredStations = React.useMemo(() => {
+    if (filterOpen === null) {
+      return stations;
+    }
+    return stations.filter(station => {
+      const isOpen = isStationOpen(station);
+      return isOpen === filterOpen;
+    });
+  }, [stations, filterOpen]);
+
+  // Animation functions
+  const showFilterPanel = useCallback(() => {
+    setShowFilterModal(true);
+    Animated.timing(filterPanelAnimation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [filterPanelAnimation]);
+
+  const hideFilterPanel = useCallback(() => {
+    Animated.timing(filterPanelAnimation, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowFilterModal(false);
+    });
+  }, [filterPanelAnimation]);
+
+  // Handle filter panel visibility changes
+  useEffect(() => {
+    if (showFilterModal) {
+      showFilterPanel();
+    }
+  }, [showFilterModal, showFilterPanel]);
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -547,12 +650,13 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
         style={styles.map}
         initialRegion={region}
         onRegionChangeComplete={setRegion}
+        onPress={() => { if (showFilterModal) { hideFilterPanel(); } }}
         showsUserLocation={true}
         // clusterColor="#2e7d32"
         clusterColor="blue"
         clusterTextColor="#fff"
       >
-        {stations.map((station) => (
+        {filteredStations.map((station) => (
           <Marker
             key={station.pk}
             coordinate={{ latitude: station.lat, longitude: station.lng }}
@@ -594,6 +698,97 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
           <MaterialIcons name="remove" size={24} color="#000" />
         </TouchableOpacity>
       </View>
+
+      {/* Filter Button */}
+      <TouchableOpacity 
+        style={styles.filterButtonMap} 
+        onPress={() => { showFilterModal ? hideFilterPanel() : setShowFilterModal(true); }}
+      >
+        <MaterialIcons name="filter-list" size={24} color="#000" />
+      </TouchableOpacity>
+
+      {/* Filter Panel */}
+      {showFilterModal && (
+        <Animated.View 
+          style={[
+            styles.filterPanel,
+            {
+              opacity: filterPanelAnimation,
+              transform: [{
+                translateY: filterPanelAnimation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [50, 0],
+                }),
+              }],
+            },
+          ]}
+        >
+          <View style={styles.filterPanelContent}>
+            <View style={styles.filterPanelHeader}>
+              <Text style={styles.filterPanelTitle}>{t("petrolStations.filter")}</Text>
+              <TouchableOpacity onPress={hideFilterPanel}>
+                <MaterialIcons name="close" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.filterPanelButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.filterPanelButton,
+                  filterOpen === null && styles.filterPanelButtonActive
+                ]}
+                onPress={() => {
+                  setFilterOpen(null);
+                  hideFilterPanel();
+                }}
+              >
+                <Text style={[
+                  styles.filterPanelButtonText,
+                  filterOpen === null && styles.filterPanelButtonTextActive
+                ]}>
+                  {t("petrolStations.all")}
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[
+                  styles.filterPanelButton,
+                  filterOpen === true && styles.filterPanelButtonActive
+                ]}
+                onPress={() => {
+                  setFilterOpen(true);
+                  hideFilterPanel();
+                }}
+              >
+                <Text style={[
+                  styles.filterPanelButtonText,
+                  filterOpen === true && styles.filterPanelButtonTextActive
+                ]}>
+                  {t("petrolStations.open")}
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[
+                  styles.filterPanelButton,
+                  filterOpen === false && styles.filterPanelButtonActive
+                ]}
+                onPress={() => {
+                  setFilterOpen(false);
+                  hideFilterPanel();
+                }}
+              >
+                <Text style={[
+                  styles.filterPanelButtonText,
+                  filterOpen === false && styles.filterPanelButtonTextActive
+                ]}>
+                  {t("petrolStations.closed")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Animated.View>
+      )}
     </View>
   );
 };
@@ -649,6 +844,73 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     elevation: 5,
   },
+  filterButtonMap: {
+    position: "absolute",
+    bottom: 16,
+    left: 16,
+    backgroundColor: "white",
+    borderRadius: 30,
+    width: 56,
+    height: 56,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+  },
+  filterPanel: {
+    position: "absolute",
+    bottom: 80,
+    left: 16,
+    right: 16,
+    maxWidth: "50%",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderRadius: 12,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  filterPanelContent: {
+    padding: 16,
+  },
+  filterPanelHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  filterPanelTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  filterPanelButtons: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  filterPanelButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: "#f8f9fa",
+    alignItems: "center",
+  },
+  filterPanelButtonActive: {
+    backgroundColor: "#2e7d32",
+  },
+  filterPanelButtonText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#666",
+  },
+  filterPanelButtonTextActive: {
+    color: "#fff",
+  },
   calloutContainer: {
     width: 220,
     backgroundColor: "white",
@@ -678,6 +940,35 @@ const styles = StyleSheet.create({
     color: "#2e7d32",
     marginLeft: 4,
     fontWeight: "500",
+  },
+  filterContainer: {
+    padding: 8,
+    backgroundColor: "#fff",
+    elevation: 1,
+  },
+  filterButtons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  filterButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginHorizontal: 4,
+    borderRadius: 8,
+    backgroundColor: "#f8f9fa",
+    alignItems: "center",
+  },
+  filterButtonActive: {
+    backgroundColor: "#2e7d32",
+  },
+  filterButtonText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#666",
+  },
+  filterButtonTextActive: {
+    color: "#fff",
   },
   searchContainer: {
     padding: 8,

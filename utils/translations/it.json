@@ -38,6 +38,8 @@
     "open": "Aperto",
     "closed": "Chiuso",
     "unknown": "Sconosciuto",
+    "all": "Tutti",
+    "filter": "Filtro",
     "noOpeningHours": "Orari non disponibili.",
     "prices": "Prezzi carburante",
     "getDirections": "Indicazioni",
