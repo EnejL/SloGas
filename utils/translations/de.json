@@ -38,6 +38,8 @@
     "open": "Geöffnet",
     "closed": "Geschlossen",
     "unknown": "Unbekannt",
+    "all": "Alle",
+    "filter": "Filter",
     "noOpeningHours": "Keine Öffnungszeiten verfügbar.",
     "prices": "Kraftstoffpreise",
     "getDirections": "Route",

@@ -38,6 +38,8 @@
     "open": "Otvoreno",
     "closed": "Zatvoreno",
     "unknown": "Nepoznato",
+    "all": "Sve",
+    "filter": "Filter",
     "noOpeningHours": "Radno vrijeme nije dostupno.",
     "prices": "Cijene goriva",
     "getDirections": "Upute",
