@@ -93,13 +93,13 @@ export const formatPrice = (price, language = null) => {
   }
   
   // Format based on language
-  // English uses period as decimal separator (1.45 €)
-  // All other languages use comma as decimal separator (1,45 €)
+  // English uses period as decimal separator (1.450 €)
+  // All other languages use comma as decimal separator (1,450 €)
   if (currentLanguage === 'en') {
-    return `${numericPrice.toFixed(2)} €`;
+    return `${numericPrice.toFixed(3)} €`;
   } else {
     // For all other languages (sl, it, de, hr), use comma as decimal separator
-    return `${numericPrice.toFixed(2).replace('.', ',')} €`;
+    return `${numericPrice.toFixed(3).replace('.', ',')} €`;
   }
 };
 
@@ -118,9 +118,9 @@ export const formatPriceNumber = (price, language = null) => {
   }
   
   if (currentLanguage === 'en') {
-    return numericPrice.toFixed(2);
+    return numericPrice.toFixed(3);
   } else {
-    return numericPrice.toFixed(2).replace('.', ',');
+    return numericPrice.toFixed(3).replace('.', ',');
   }
 };
 

@@ -28,6 +28,20 @@ import StatusBadge from "../components/StatusBadge";
 
 const initialLayout = { width: Dimensions.get("window").width };
 
+// Calculate distance between two coordinates using Haversine formula
+// Returns distance in kilometers
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
 const isStationOpen = (station) => {
   const openingHours = station.opening_hours || station.open_hours;
   
@@ -181,12 +195,6 @@ const StationsScreen = ({ navigation }) => {
         }
       });
       
-      // Show breakdown by status
-      const openPercentage = ((openStations.length / data.length) * 100).toFixed(1);
-      const closedPercentage = ((closedStations.length / data.length) * 100).toFixed(1);
-      console.log(`Open: ${openPercentage}% | Closed: ${closedPercentage}%`);
-      console.log('═'.repeat(60));
-      
     } catch (error) {
       console.error("Error loading petrol stations:", error);
       setError(t("petrolStations.fetchError"));
@@ -301,6 +309,31 @@ const StationListScreen = ({
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterOpen, setFilterOpen] = useState(null); // null = all, true = open only, false = closed only
+  const [userLocation, setUserLocation] = useState(null);
+
+  // Get user location for distance-based sorting
+  useEffect(() => {
+    const getUserLocation = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === "granted") {
+          const location = await Location.getCurrentPositionAsync({});
+          setUserLocation({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          });
+        }
+      } catch (error) {
+        // Location permission denied or error - keep userLocation as null
+        // This will use default sorting
+      }
+    };
+    
+    // Only fetch location for main list view, not favorites
+    if (!isFavorites) {
+      getUserLocation();
+    }
+  }, [isFavorites]);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -325,8 +358,27 @@ const StationListScreen = ({
       });
     }
     
+    // Sort by distance if user location is available and not in favorites view
+    if (userLocation && !isFavorites) {
+      filtered = [...filtered].sort((a, b) => {
+        const distanceA = calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          a.lat,
+          a.lng
+        );
+        const distanceB = calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          b.lat,
+          b.lng
+        );
+        return distanceA - distanceB;
+      });
+    }
+    
     return filtered;
-  }, [stations, searchQuery, filterOpen]);
+  }, [stations, searchQuery, filterOpen, userLocation, isFavorites]);
 
   const handleRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -521,7 +573,6 @@ const StationMapScreen = ({ stations, loading, error, navigation }) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        console.log("Location permission denied");
         return;
       }
       const location = await Location.getCurrentPositionAsync({});

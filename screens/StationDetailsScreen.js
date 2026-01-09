@@ -146,21 +146,7 @@ const StationDetailsScreen = ({ route, navigation }) => {
       ? t("petrolStations.closed")
       : t("petrolStations.unknown");
 
-  useEffect(() => {
-    try {
-      const prices = station && station.prices ? station.prices : {};
-      const entries = Object.entries(prices || {});
-      if (entries.length === 0) {
-        console.log('No prices available for this station.');
-      } else {
-        entries.forEach(([fuelKey, value]) => {
-          console.log(`  ${fuelKey}: ${value}`);
-        });
-      }
-    } catch (e) {
-      console.log('Error logging station prices:', e?.message || e);
-    }
-  }, [station]);
+  // Removed debug logging for production
 
   const openMapsApp = () => {
     const scheme = Platform.select({
