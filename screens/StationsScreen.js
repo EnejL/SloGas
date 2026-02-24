@@ -77,10 +77,9 @@ const isStationOpen = (station) => {
       for (const timeSlot of schedule.times) {
         const [fromHour, fromMin] = timeSlot.from.split(':').map(Number);
         const [toHour, toMin] = timeSlot.to.split(':').map(Number);
-        
         const fromTime = fromHour * 60 + fromMin;
-        const toTime = toHour * 60 + toMin;
-        
+        // "00:00" as end time means midnight (end of day) → treat as 24:00
+        const toTime = (toHour === 0 && toMin === 0) ? 24 * 60 : toHour * 60 + toMin;
         if (currentTime >= fromTime && currentTime <= toTime) {
           return true;
         }

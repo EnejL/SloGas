@@ -30,13 +30,18 @@ const parseOpenHours = (str) => {
     // English support
     "monday": "mon", "tuesday": "tue", "wednesday": "wed", "thursday": "thu", "friday": "fri",
     "saturday": "sat", "sunday": "sun", "mon": "mon", "tue": "tue", "wed": "wed", "thu": "thu", "fri": "fri", "sat": "sat", "sun": "sun",
+    "holiday": "holiday",
     // Groups
     "delavnik": ["mon", "tue", "wed", "thu", "fri"], "vsak delavnik": ["mon", "tue", "wed", "thu", "fri"],
     "sobote": ["sat"], "nedelje": ["sun"],
     "vsak dan": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+    "every day": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"], "everyday": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     "vikend": ["sat", "sun"],
     "weekend": ["sat", "sun"],
   };
+
+  // Normalize "00006"-style times (leading zeros + hour) to "06:00" so the time regex can match
+  text = text.replace(/\b0{2,}(\d{1,2})\b/g, (_, h) => String(h).padStart(2, '0') + ':00');
 
   const lines = text.split(/[\n\r]+/).map(l => l.trim()).filter(Boolean);
   const schedule = [];
@@ -47,6 +52,16 @@ const parseOpenHours = (str) => {
   const allDays = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
   const dayOrder = ['mon','tue','wed','thu','fri','sat','sun'];
   const nextDayOf = (code) => dayOrder[(dayOrder.indexOf(code) + 1) % dayOrder.length];
+
+  // Expand "Monday, Saturday" (two days in order) to full range Mon–Sat
+  const expandDayRange = (daySet) => {
+    const arr = Array.from(daySet).filter(d => dayOrder.includes(d));
+    if (arr.length !== 2) return daySet;
+    const [a, b] = arr.map(d => dayOrder.indexOf(d)).sort((x, y) => x - y);
+    const expanded = new Set(daySet);
+    for (let i = a; i <= b; i++) expanded.add(dayOrder[i]);
+    return expanded;
+  };
   
   for (const line of lines) {
     let processed = false;
@@ -59,7 +74,7 @@ const parseOpenHours = (str) => {
     }
 
     // Check for day and time declarations
-    const dayTimeRegex = /((?:(?:vsak dan|delavnik|vikend|weekend|ponedeljek|torek|sreda|četrtek|petek|sobota|nedelja|praznik|pon|tor|sre|čet|pet|sob|ned|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun)[\s,;&-]*)+)?(.*)/i;
+    const dayTimeRegex = /((?:(?:vsak dan|every day|everyday|delavnik|vikend|weekend|ponedeljek|torek|sreda|četrtek|petek|sobota|nedelja|praznik|holiday|pon|tor|sre|čet|pet|sob|ned|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun)[\s,;&-]*)+)?(.*)/i;
     const match = line.match(dayTimeRegex);
 
     if (match) {
@@ -78,15 +93,19 @@ const parseOpenHours = (str) => {
                 else days.add(dayVal);
             }
         });
+        // "Monday, Saturday" → Mon–Sat; "Monday, Friday" → Mon–Fri
+        const expandedDays = expandDayRange(days);
+        expandedDays.forEach(d => days.add(d));
 
         const timeRegex = /(\d{1,2}[:.]?\d{0,2})\s*-\s*(\d{1,2}[:.]?\d{0,2})/g;
         let timeMatch;
         const times = [];
         while((timeMatch = timeRegex.exec(timeRaw)) !== null) {
-            times.push({ 
-                from: timeMatch[1].replace('.', ':').padStart(5, '0'), 
-                to: timeMatch[2].replace('.', ':').padStart(5, '0') 
-            });
+            let from = timeMatch[1].replace('.', ':').padStart(5, '0');
+            let to = timeMatch[2].replace('.', ':').padStart(5, '0');
+            // "00:00 - 00:00" means 24h → treat as 00:00–23:59
+            if (from === '00:00' && to === '00:00') to = '23:59';
+            times.push({ from, to });
         }
 
         if (days.size > 0 && times.length > 0) {
@@ -143,16 +162,20 @@ const parseOpenHours = (str) => {
       const [fh, fm] = timeSlot.from.split(':').map(Number);
       const [th, tm] = timeSlot.to.split(':').map(Number);
       const fromMin = fh * 60 + fm;
-      const toMin = th * 60 + tm;
+      let toMin = th * 60 + tm;
+      let toTime = timeSlot.to;
+      // "05:00 - 00:00" means until midnight (end of same day), not next day
+      if (toMin === 0 && fromMin > 0) {
+        toTime = '23:59';
+        toMin = 23 * 60 + 59;
+      }
       if (toMin >= fromMin) {
-        normalized.push({ days: [...entry.days], times: [{ from: timeSlot.from, to: timeSlot.to }], ...(baseMonths ? { months: baseMonths } : {}) });
+        normalized.push({ days: [...entry.days], times: [{ from: timeSlot.from, to: toTime }], ...(baseMonths ? { months: baseMonths } : {}) });
       } else {
         // Overnight: split into two entries
-        // Part 1: current day from 'from' to 23:59
         normalized.push({ days: [...entry.days], times: [{ from: timeSlot.from, to: '23:59' }], ...(baseMonths ? { months: baseMonths } : {}) });
-        // Part 2: next day from 00:00 to 'to'
         const nextDays = Array.from(new Set(entry.days.map(d => nextDayOf(d))));
-        normalized.push({ days: nextDays, times: [{ from: '00:00', to: timeSlot.to }], ...(baseMonths ? { months: baseMonths } : {}) });
+        normalized.push({ days: nextDays, times: [{ from: '00:00', to: toTime }], ...(baseMonths ? { months: baseMonths } : {}) });
       }
     }
   }
@@ -170,16 +193,34 @@ const parseOpenHours = (str) => {
   }
   let merged = Array.from(mergedByTimes.values()).map(v => ({ times: v.times, days: Array.from(v.days), ...(v.months ? { months: v.months } : {}) }));
 
-  // Heuristic: if there are two all-days entries with different times, split into Mon-Sat and Sun/Holiday
+  // Heuristic: if there are exactly two all-days entries with different times, split into Mon-Sat and Sun/Holiday
   const allDayEntries = merged.filter(e => e.days.length === 7 && (!e.months || e.months.length === 0));
-  if (allDayEntries.length >= 2) {
-    // Sort by starting time
+  if (allDayEntries.length === 2) {
     allDayEntries.sort((a, b) => a.times[0].from.localeCompare(b.times[0].from));
-    // Remove them from merged
     merged = merged.filter(e => !(e.days.length === 7 && (!e.months || e.months.length === 0)));
-    // Add heuristic split
     merged.push({ days: ["mon","tue","wed","thu","fri","sat"], times: allDayEntries[0].times });
     merged.push({ days: ["sun","holiday"], times: allDayEntries[1].times });
+  } else if (allDayEntries.length > 2) {
+    // Multiple time ranges for the same day (e.g. "Every Day: 00:00-06:00, 06:00-10:30, ...") – keep one entry with all slots
+    const allTimes = [];
+    for (const e of allDayEntries) allTimes.push(...e.times);
+    merged = merged.filter(e => !(e.days.length === 7 && (!e.months || e.months.length === 0)));
+    merged.push({ days: ["mon","tue","wed","thu","fri","sat","sun"], times: allTimes });
+  }
+
+  // "Monday, Saturday: 00005-00023, 00008-00020" → two entries with same Mon-Sat → Mon-Sat first time, Sun second time
+  const monSatOnly = ["mon", "tue", "wed", "thu", "fri", "sat"];
+  const monSatEntries = merged.filter(e =>
+    (!e.months || e.months.length === 0) &&
+    e.days.length === 6 &&
+    monSatOnly.every(d => e.days.includes(d)) &&
+    !e.days.includes("sun")
+  );
+  if (monSatEntries.length === 2) {
+    monSatEntries.sort((a, b) => a.times[0].from.localeCompare(b.times[0].from));
+    merged = merged.filter(e => !monSatEntries.includes(e));
+    merged.push({ days: [...monSatOnly], times: monSatEntries[0].times });
+    merged.push({ days: ["sun", "holiday"], times: monSatEntries[1].times });
   }
 
   return merged.length > 0 ? merged : null;
