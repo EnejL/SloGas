@@ -1513,6 +1513,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - ExtensionStorage (1.0.0):
+    - ExpoModulesCore
   - EXUpdatesInterface (1.1.0):
     - ExpoModulesCore
   - fast_float (6.1.4)
@@ -3133,6 +3135,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-widget-center (0.0.9):
+    - React
   - React-NativeModulesApple (0.79.5):
     - glog
     - hermes-engine
@@ -3543,6 +3547,8 @@ PODS:
   - RNGoogleSignin (11.0.1):
     - GoogleSignIn (~> 7.0.0)
     - React-Core
+  - RNReactNativeSharedGroupPreferences (1.1.24):
+    - React
   - RNScreens (4.11.1):
     - DoubleConversion
     - glog
@@ -3617,6 +3623,7 @@ DEPENDENCIES:
   - ExpoLinking (from `../node_modules/expo-linking/ios`)
   - ExpoLocation (from `../node_modules/expo-location/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
+  - "ExtensionStorage (from `../node_modules/@bacons/apple-targets/ios`)"
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - fast_float (from `../node_modules/react-native/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -3660,6 +3667,7 @@ DEPENDENCIES:
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-widget-center (from `../node_modules/react-native-widget-center`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -3698,6 +3706,7 @@ DEPENDENCIES:
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
+  - RNReactNativeSharedGroupPreferences (from `../node_modules/react-native-shared-group-preferences`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -3768,6 +3777,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-location/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core"
+  ExtensionStorage:
+    :path: "../node_modules/@bacons/apple-targets/ios"
   EXUpdatesInterface:
     :path: "../node_modules/expo-updates-interface/ios"
   fast_float:
@@ -3851,6 +3862,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-pager-view"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-widget-center:
+    :path: "../node_modules/react-native-widget-center"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -3927,6 +3940,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
+  RNReactNativeSharedGroupPreferences:
+    :path: "../node_modules/react-native-shared-group-preferences"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   Yoga:
@@ -3955,6 +3970,7 @@ SPEC CHECKSUMS:
   ExpoLinking: d5c183998ca6ada66ff45e407e0f965b398a8902
   ExpoLocation: a43df2ff15f2fae9504b23a77060e7cd16b3e326
   ExpoModulesCore: b0282ef361d46ddf759228430382226293060051
+  ExtensionStorage: 5796de20bf181317c376d693fedb64c6781a33ba
   EXUpdatesInterface: 7ff005b7af94ee63fa452ea7bb95d7a8ff40277a
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: d2a9cd223302b6c9aa4aa34c1a775e9db609eb52
@@ -4016,6 +4032,7 @@ SPEC CHECKSUMS:
   react-native-maps: 9febd31278b35cd21e4fad2cf6fa708993be5dab
   react-native-pager-view: 04ff926ac8977b63970da40effd02963b60e0970
   react-native-safe-area-context: 5928d84c879db2f9eb6969ca70e68f58623dbf25
+  react-native-widget-center: 8fbb8acf088ea956234af0da6fe0149a7e30e875
   React-NativeModulesApple: 0f1cdafa0517926f47ff74dbd92a1c9bb767cc69
   React-oscompat: 0592889a9fcf0eacb205532028e4a364e22907dd
   React-perflogger: c584fa50e422a46f37404d083fad12eb289d5de4
@@ -4055,10 +4072,11 @@ SPEC CHECKSUMS:
   RNFBFirestore: 6d40977a1feac63f0110e41ffd1ce0ccaa61e2ab
   RNGestureHandler: 8ff2b1434b0ff8bab28c8242a656fb842990bbc8
   RNGoogleSignin: b8f09e3ec56e09497e1e53b0ff66d5a45916c6b1
+  RNReactNativeSharedGroupPreferences: d4869af3c7757405b6b5ac633d0ef5f9886a9be7
   RNScreens: 90b905d545a5ebbe976985702b8a39e3475727b2
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: bfcce202dba74007f8974ee9c5f903a9a286c445
 
-PODFILE CHECKSUM: 77f5ad2279fe3fb844ef248558dacabc1f78aa7c
+PODFILE CHECKSUM: 9b039f6a50b915c59384fb61ff6af489d2dedf8b
 
 COCOAPODS: 1.16.2

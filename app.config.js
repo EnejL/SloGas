@@ -23,6 +23,11 @@ export default {
         "ITSAppUsesNonExemptEncryption": false
       },
       "googleServicesFile": "./GoogleService-Info.plist",
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.com.enejlicina.slogas"
+        ]
+      },
       "config": {
         "googleMapsApiKey": "AIzaSyCB7pakhzxdYuzfvZbMrcHJ7jcuZmVFprA"
       }
@@ -66,6 +71,7 @@ export default {
       '@react-native-firebase/app',
       '@react-native-firebase/auth',
       "expo-apple-authentication",
+      "@bacons/apple-targets",
       [
         "expo-build-properties",
         {

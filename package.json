@@ -10,6 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@bacons/apple-targets": "^4.0.3",
     "@expo/metro-runtime": "~5.0.4",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/datetimepicker": "8.4.1",
@@ -48,8 +49,10 @@
     "react-native-paper": "^5.13.1",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
+    "react-native-shared-group-preferences": "^1.1.24",
     "react-native-tab-view": "^4.0.5",
-    "react-native-web": "^0.20.0"
+    "react-native-web": "^0.20.0",
+    "react-native-widget-center": "^0.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
