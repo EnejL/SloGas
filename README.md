@@ -162,7 +162,7 @@ firebase deploy --only functions
 - Makes the scheduled function (`fetchFuelData`) and HTTP function (`testFetchFuelData`) available
 
 **What happens after deployment:**
-- `fetchFuelData` runs automatically every Tuesday at 4:00 AM (Europe/Ljubljana timezone)
+- `fetchFuelData` runs automatically once per day at 4:00 AM (Europe/Ljubljana timezone)
 - `testFetchFuelData` can be triggered manually via HTTP request
 
 ### Manually Triggering Data Update
